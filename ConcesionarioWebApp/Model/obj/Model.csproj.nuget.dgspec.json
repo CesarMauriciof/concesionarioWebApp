@@ -1,25 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\juanc\\OneDrive\\Documentos\\Documentos U\\Aplicaciones web\\concesionariowebapp\\ConcesionarioWebApp\\Model\\Model.csproj": {}
+    "/home/mauricio/Escritorio/concesionariowebapp/ConcesionarioWebApp/Model/Model.csproj": {}
   },
   "projects": {
-    "C:\\Users\\juanc\\OneDrive\\Documentos\\Documentos U\\Aplicaciones web\\concesionariowebapp\\ConcesionarioWebApp\\Model\\Model.csproj": {
+    "/home/mauricio/Escritorio/concesionariowebapp/ConcesionarioWebApp/Model/Model.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\juanc\\OneDrive\\Documentos\\Documentos U\\Aplicaciones web\\concesionariowebapp\\ConcesionarioWebApp\\Model\\Model.csproj",
+        "projectUniqueName": "/home/mauricio/Escritorio/concesionariowebapp/ConcesionarioWebApp/Model/Model.csproj",
         "projectName": "Model",
-        "projectPath": "C:\\Users\\juanc\\OneDrive\\Documentos\\Documentos U\\Aplicaciones web\\concesionariowebapp\\ConcesionarioWebApp\\Model\\Model.csproj",
-        "packagesPath": "C:\\Users\\juanc\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\juanc\\OneDrive\\Documentos\\Documentos U\\Aplicaciones web\\concesionariowebapp\\ConcesionarioWebApp\\Model\\obj\\",
+        "projectPath": "/home/mauricio/Escritorio/concesionariowebapp/ConcesionarioWebApp/Model/Model.csproj",
+        "packagesPath": "/home/mauricio/.nuget/packages/",
+        "outputPath": "/home/mauricio/Escritorio/concesionariowebapp/ConcesionarioWebApp/Model/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\juanc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/mauricio/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "/usr/lib/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -39,7 +40,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -61,7 +62,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.318/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.121/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
