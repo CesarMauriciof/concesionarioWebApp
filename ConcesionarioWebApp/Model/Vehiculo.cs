@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ConcesionarioWebApp.Model;
 
-public class VehiculoEntity
+public class Vehiculo
 {
     [Key]
     public int IdVehiculo { get; set; }
