@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Model;
 
 public class ClientEntity
 {
@@ -24,4 +25,7 @@ public class ClientEntity
     [Required]
     [StringLength(150)]
     public string Direccion { get; set; }
+    
+    public ICollection<SaleEntity>  venta { get; set; }
+    
 }
