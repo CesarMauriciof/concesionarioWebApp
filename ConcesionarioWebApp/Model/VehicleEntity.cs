@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Model;
 
 namespace ConcesionarioWebApp.Model;
 
@@ -23,7 +24,8 @@ public class VehicleEntity
     [Required]
     [Column(TypeName = "decimal(12,2)")]
     public decimal Precio { get; set; }
-
-    [Required]
+    
     public int IdSede { get; set; }
+    
+    public ICollection<SaleDetailEntity> Detalle_Venta{get; set;}
 }
