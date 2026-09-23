@@ -22,9 +22,13 @@ namespace ConcesionarioWebApp.Data
         public DbSet<CreditEntity> Credits { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseMySql("server=localhost;user=root;password=r00t123;port=3306;database=concesionario",
+                    new MySqlServerVersion(new Version(8, 0, 34)));
+            }
             
         }
     }
