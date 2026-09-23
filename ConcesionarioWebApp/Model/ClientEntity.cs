@@ -3,7 +3,7 @@
 public class ClientEntity
 {
     [Key]
-    public int IdCliente { get; set; }
+    public int Id_Cliente { get; set; }
 
     [Required]
     [StringLength(15)]
