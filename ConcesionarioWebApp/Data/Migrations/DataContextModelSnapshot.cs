@@ -24,11 +24,11 @@ namespace Data.Migrations
 
             modelBuilder.Entity("ClientEntity", b =>
                 {
-                    b.Property<int>("IdCliente")
+                    b.Property<int>("Id_Cliente")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdCliente"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id_Cliente"));
 
                     b.Property<string>("Cedula")
                         .IsRequired()
@@ -55,9 +55,20 @@ namespace Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)");
 
-                    b.HasKey("IdCliente");
+                    b.HasKey("Id_Cliente");
 
                     b.ToTable("Clients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id_Cliente = 1,
+                            Cedula = "001",
+                            Correo = "Yeison@gmail.com",
+                            Direccion = "carrera 5 #24-10",
+                            Nombre = "Yeison Anaya",
+                            Telefono = "310546891"
+                        });
                 });
 
             modelBuilder.Entity("ConcesionarioWebApp.Model.VehicleEntity", b =>
