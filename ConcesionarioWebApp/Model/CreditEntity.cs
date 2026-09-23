@@ -29,4 +29,8 @@ public class CreditEntity
 
     [Required]
     public int numero_cuotas { get; set; }
+    
+    // Relación Muchos a Uno: Un Crédito está vinculado a un Pago específico
+    [ForeignKey(nameof(id_pago))]
+    public virtual PayEntity? pago { get; set; }
 }
