@@ -24,5 +24,8 @@ namespace Model
         [MaxLength(150)]
         [Column("direccion")]
         public string Direccion { get; set; } = string.Empty;
+
+        // Propiedad de navegación: Una sede tiene muchos empleados
+        public virtual ICollection<EmployeeEntity> Empleados { get; set; } = new List<EmployeeEntity>();
     }
 }

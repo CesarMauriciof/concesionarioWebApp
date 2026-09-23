@@ -33,7 +33,7 @@ namespace Model
         [Column("id_sede")]
         public int IdSede { get; set; }
 
-        // Propiedad de navegación
+        // Propiedad de navegación: Un empleado pertenece a una sede
         [ForeignKey(nameof(IdSede))]
         public virtual HeadquartersEntity? Sede { get; set; }
     }
