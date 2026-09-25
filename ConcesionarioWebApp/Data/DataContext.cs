@@ -17,7 +17,7 @@ namespace ConcesionarioWebApp.Data
         public DbSet<SaleEntity> Sales { get; set; }
         public DbSet<VehicleEntity> Vehicles { get; set; }
         public DbSet<WarrantyEntity> Warranties { get; set; }
-        public DbSet<PayEntity> Pay { get; set; }
+        public DbSet<PayEntity> Pays { get; set; }
         public DbSet<CreditEntity> Credits { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
