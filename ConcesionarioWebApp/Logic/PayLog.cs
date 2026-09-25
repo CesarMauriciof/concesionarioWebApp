@@ -8,7 +8,7 @@ public class PayLog
     /*
      * Método que permite crear una nueva venta en la base de datos.
      */
-    public void CreateSale(PayEntity objPay)
+    public void CreatePay(PayEntity objPay)
     {
         using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
         {
