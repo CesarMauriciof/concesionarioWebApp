@@ -27,4 +27,7 @@ public class WarrantyEntity
     [Required]
     [StringLength(200)]
     public string condiciones { get; set; } = string.Empty;
+    
+    // Relación
+    public ICollection<MaintenanceEntity> Mantenimientos { get; set; }
 }

@@ -28,4 +28,6 @@ public class MaintenanceEntity
 
     [Required]
     public DateTime fecha_programada { get; set; }
+    // Relación
+    public WarrantyEntity Garantias { get; set; }
 }
