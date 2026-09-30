@@ -7,12 +7,10 @@ pipelines:
           name: Sincronizar Rama Main en GitHub
           script:
             - git remote add github https://github.com
-            - git config --global http.https://github.com "Authorization: Basic $(echo -n x-token-auth:${GITHUB_TOKEN} | base64)"
-            - git push github main:main --force --tags
+            - git push https://x-token-auth:${GITHUB_TOKEN}@://github.com main:main --force --tags
     develop:
       - step:
           name: Sincronizar Rama Develop en GitHub
           script:
             - git remote add github https://github.com
-            - git config --global http.https://github.com "Authorization: Basic $(echo -n x-token-auth:${GITHUB_TOKEN} | base64)"
-            - git push github develop:develop --force --tags
+            - git push https://x-token-auth:${GITHUB_TOKEN}@://github.com develop:develop --force --tags
