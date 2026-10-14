@@ -9,7 +9,7 @@ namespace Logic
         /*
          * Método que permite crear un nuevo detalle de venta en la base de datos.
          */
-        public void CreateSaleDetail(SaleDetailEntity objSaleDetail)
+        public static void CreateSaleDetail(SaleDetailEntity objSaleDetail)
         {
             using (var db = new DataContext(new DbContextOptions<DataContext>()))
             {
@@ -21,7 +21,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todos los detalles de venta existentes.
          */
-        public List<SaleDetailEntity> SaleDetailList()
+        public static List<SaleDetailEntity> SaleDetailList()
         {
             using (var db = new DataContext(new DbContextOptions<DataContext>()))
             {
@@ -32,7 +32,7 @@ namespace Logic
         /*
          * Método que actualiza un detalle de venta existente en la base de datos.
          */
-        public void UpdateSaleDetail(SaleDetailEntity objSaleDetail)
+        public static void UpdateSaleDetail(SaleDetailEntity objSaleDetail)
         {
             using (var db = new DataContext(new DbContextOptions<DataContext>()))
             {

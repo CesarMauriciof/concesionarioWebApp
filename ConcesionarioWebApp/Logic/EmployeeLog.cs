@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear un nuevo empleado en la base de datos.
          */
-        public void CreateEmployee(EmployeeEntity objEmployee)
+        public static void CreateEmployee(EmployeeEntity objEmployee)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todos los empleados existentes en la base de datos.
          */
-        public List<EmployeeEntity> EmployeeList()
+        public static List<EmployeeEntity> EmployeeList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza un empleado existente en la base de datos.
          */
-        public void UpdateEmployee(EmployeeEntity objEmployee)
+        public static void UpdateEmployee(EmployeeEntity objEmployee)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {

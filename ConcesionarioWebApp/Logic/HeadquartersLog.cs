@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear una nueva sede en la base de datos.
          */
-        public void CreateHeadquarters(HeadquartersEntity objHeadquarters)
+        public static void CreateHeadquarters(HeadquartersEntity objHeadquarters)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todas las sedes existentes en la base de datos.
          */
-        public List<HeadquartersEntity> HeadquartersList()
+        public static List<HeadquartersEntity> HeadquartersList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza una sede existente en la base de datos.
          */
-        public void UpdateHeadquarters(HeadquartersEntity objHeadquarters)
+        public static void UpdateHeadquarters(HeadquartersEntity objHeadquarters)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
