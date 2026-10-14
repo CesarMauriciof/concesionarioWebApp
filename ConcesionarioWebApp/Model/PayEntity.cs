@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Model;
 
 [Table("pago")]
@@ -14,7 +15,8 @@ public class PayEntity
     [Required]
     public int id_venta { get; set; }
     
-    [ForeignKey("id_venta")]
+    // Relación Muchos a Uno: Un Pago pertenece a una Venta
+    [ForeignKey(nameof(id_venta))]
     public virtual SaleEntity? Venta { get; set; }
     
     [Required]
@@ -28,10 +30,6 @@ public class PayEntity
     [Required]
     [StringLength(100)]
     public string metodo_pago { get; set; } = string.Empty;
-    
-    // Relación Muchos a Uno: Un Pago pertenece a una Venta
-    [ForeignKey(nameof(id_venta))]
-    public virtual SaleEntity? venta { get; set; }
 
     // Relación Uno a Muchos / Opcional: Un Pago puede tener asociados uno o más Créditos
     public virtual ICollection<CreditEntity> Creditos { get; set; } = new List<CreditEntity>();

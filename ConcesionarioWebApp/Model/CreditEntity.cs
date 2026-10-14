@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Model;
 
 // 4. Entidad Crédito
@@ -15,7 +16,8 @@ public class CreditEntity
     [Required]
     public int id_pago { get; set; }
 
-    [ForeignKey("id_pago")]
+    // Relación Muchos a Uno: Un Crédito está vinculado a un Pago específico
+    [ForeignKey(nameof(id_pago))]
     public virtual PayEntity? Pago { get; set; }
 
     // Data annotations tamaño del atributo en la bd
@@ -29,8 +31,4 @@ public class CreditEntity
 
     [Required]
     public int numero_cuotas { get; set; }
-    
-    // Relación Muchos a Uno: Un Crédito está vinculado a un Pago específico
-    [ForeignKey(nameof(id_pago))]
-    public virtual PayEntity? pago { get; set; }
 }
