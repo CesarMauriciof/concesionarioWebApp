@@ -1,0 +1,97 @@
+﻿@using Model
+@* Agrega aquí el namespace exacto de tu capa de lógica *@
+@using Logic 
+@inject NavigationManager NavManager
+
+<h3>Registrar Pago</h3>
+
+<EditForm Model="objPay" OnValidSubmit="SavePay" FormName="FrmPay">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Venta Asociada:</label>
+        <InputSelect @bind-Value="objPay.id_venta">
+            <option value="0">-- Seleccione una Venta --</option>
+            @if (sales != null)
+            {
+                @foreach (var sale in sales)
+                {
+                    <option value="@sale.id_venta">
+                        Venta #@sale.id_venta
+                    </option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div>
+        <label>Monto a Pagar:</label>
+        <InputNumber @bind-Value="objPay.monto" />
+    </div>
+
+    <div>
+        <label>Fecha de Pago:</label>
+        <InputDate @bind-Value="objPay.fecha_pago" />
+    </div>
+
+    <div>
+        <label>Método de Pago:</label>
+        <InputSelect @bind-Value="objPay.metodo_pago">
+            <option value="">-- Seleccione Método --</option>
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+            <option value="CREDITO">Crédito Bancario</option>
+            <option value="CHEQUE">Cheque</option>
+        </InputSelect>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">Guardar Pago</button>
+</EditForm>
+
+@if (successMessage != null)
+{
+    <div class="alert alert-info mt-2">@successMessage</div>
+}
+
+@code {
+    PayEntity objPay = new PayEntity() 
+    { 
+        fecha_pago = DateTime.Now 
+    };
+
+    private string? successMessage;
+    List<SaleEntity> sales = new List<SaleEntity>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Ajusta "SaleLog.SaleList()" según el nombre exacto de tu clase y método en Logic
+            sales = await Task.Run(() => SaleLog.SaleList());
+        }
+        catch (Exception ex)
+        {
+            successMessage = $"Error al cargar ventas: {ex.Message}";
+        }
+    }
+
+    private void SavePay()
+    {
+        try
+        {
+            // Ajusta "PayLog.CreatePay" según el nombre exacto de tu clase y método en Logic
+            PayLog.CreatePay(objPay);
+
+            successMessage = $"El pago por valor de ${objPay.monto} se guardó exitosamente!";
+            objPay = new PayEntity() { fecha_pago = DateTime.Now };
+
+            NavManager.NavigateTo("pay/list");
+        }
+        catch (Exception ex)
+        {
+            successMessage = $"Error al registrar el pago: {ex.Message}";
+        }
+    }
+}

@@ -1,0 +1,68 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>ListSaleComponent</h3>
+
+<div class="mb-3">
+    <a href="/sale/create" class="btn btn-primary">Nueva Venta</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID Venta</th>
+        <th>Fecha</th>
+        <th>Total Pagado</th>
+        <th>ID Cliente</th>
+        <th>ID Empleado</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (sales == null)
+    {
+        <tr>
+            <td colspan="6">Cargando ventas...</td>
+        </tr>
+    }
+    else if (!sales.Any())
+    {
+        <tr>
+            <td colspan="6">No hay ventas registradas.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var sale in sales)
+        {
+            <tr>
+                <td>@sale.id_venta</td>
+                <td>@sale.fecha.ToShortDateString()</td>
+                <td>@sale.total_pagado.ToString("C")</td>
+                <td>@sale.id_cliente</td>
+                <td>@sale.id_empleado</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(sale.id_venta)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<SaleEntity>? sales;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sales = await Task.Run(() => SaleLog.SaleList());
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/sale/update/{id}");
+    }
+}

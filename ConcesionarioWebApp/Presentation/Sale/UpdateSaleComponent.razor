@@ -1,0 +1,82 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>UpdateSaleComponent (ID: @Id)</h3>
+
+@if (objSale == null)
+{
+    <p>Cargando datos de la venta...</p>
+}
+else
+{
+    <EditForm Model="objSale" OnValidSubmit="UpdateSale">
+        <div class="mb-3">
+            <label class="form-label">Fecha de Venta:</label>
+            <InputDate @bind-Value="objSale.fecha" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Total Pagado:</label>
+            <InputNumber @bind-Value="objSale.total_pagado" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">ID Cliente:</label>
+            <InputNumber @bind-Value="objSale.id_cliente" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">ID Empleado:</label>
+            <InputNumber @bind-Value="objSale.id_empleado" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancelar</button>
+    </EditForm>
+}
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private SaleEntity? objSale;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        objSale = await Task.Run(() => SaleLog.SaleList().FirstOrDefault(s => s.id_venta == Id));
+
+        if (objSale == null)
+        {
+            message = "No se encontró la venta especificada.";
+        }
+    }
+
+    private void UpdateSale()
+    {
+        try
+        {
+            if (objSale != null)
+            {
+                SaleLog.UpdateSale(objSale);
+                message = "¡Venta actualizada con éxito!";
+                NavManager.NavigateTo("/sale/list");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al actualizar: {ex.Message}";
+        }
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/sale/list");
+    }
+}

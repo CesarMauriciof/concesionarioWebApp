@@ -1,0 +1,12 @@
+﻿@page "/Pay/update/{id_pago:int}"
+@rendermode InteractiveServer
+@using Presentation.Sale
+
+<UpdateSaleComponent id_pago="id_pago" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public static IComponentRenderMode InteractiveServer { get; set; }
+}

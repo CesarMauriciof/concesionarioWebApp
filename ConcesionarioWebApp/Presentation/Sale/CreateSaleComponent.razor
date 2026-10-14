@@ -1,0 +1,104 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Registrar Nueva Venta</h3>
+
+<EditForm Model="objSale" OnValidSubmit="SaveSale" FormName="FrmSale">
+    <div>
+        <label>Fecha de Venta:</label>
+        <InputDate @bind-Value="objSale.fecha" />
+    </div>
+    <div>
+        <label>Total Pagado:</label>
+        <InputNumber @bind-Value="objSale.total_pagado" />
+    </div>
+    
+    <!-- Selector de Cliente -->
+    <div>
+        <label>Cliente (ID):</label>
+        <!-- Si tu entidad de cliente usa id_cliente, ajústalo aquí también -->
+        <InputSelect @bind-Value="objSale.id_cliente">
+            <option value="0">Seleccione un cliente</option>
+            @if (clients != null)
+            {
+                @foreach (var client in clients)
+                {
+                    // Nota: Asegúrate de usar la propiedad correcta del ID y nombre en ClientEntity
+                    <option value="@client.Id_Cliente">@client.Nombre</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <!-- Selector de Empleado -->
+    <div>
+        <label>Empleado (ID):</label>
+        <InputSelect @bind-Value="objSale.id_empleado">
+            <option value="0">Seleccione un empleado</option>
+            @if (employees != null)
+            {
+                @foreach (var employee in employees)
+                {
+                    <option value="@employee.IdEmpleado">@employee.Nombre</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit">Guardar Venta</button>
+</EditForm>
+
+@if (successMessage != null)
+{
+    <div>@successMessage</div>
+}
+
+@code {
+    // Instancia de la venta
+    SaleEntity objSale = new SaleEntity()
+    {
+        fecha = DateTime.Now // Inicializamos con la fecha actual por defecto
+    };
+    
+    private string? successMessage;
+    
+    // Listas para los selectores (reemplaza por tus entidades reales de Client y Employee)
+    List<ClientEntity> clients = new List<ClientEntity>();
+    List<EmployeeEntity> employees = new List<EmployeeEntity>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Carga de las listas foráneas desde la capa lógica
+            clients = await Task.Run(() => ClientLog.ClientList());
+            employees = await Task.Run(() => EmployeeLog.EmployeeList());
+        }
+        catch (Exception ex)
+        {
+            successMessage = $"Error al cargar datos dependientes: {ex.Message}";
+        }
+    }
+    
+    private void SaveSale()
+    {
+        try
+        {
+            // Llama al método de tu SaleLog
+            SaleLog.CreateSale(objSale);
+
+            successMessage = "¡La venta se guardó exitosamente!";
+            
+            // Reinicia el formulario
+            objSale = new SaleEntity { fecha = DateTime.Now };
+            
+            // Redirecciona a la lista de ventas
+            NavManager.NavigateTo("sale/list");
+        }
+        catch (Exception ex)
+        {
+            successMessage = $"Error al guardar la venta: {ex.Message}";
+        }
+    }
+}

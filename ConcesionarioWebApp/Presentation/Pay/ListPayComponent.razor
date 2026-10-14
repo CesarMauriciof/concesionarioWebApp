@@ -1,0 +1,68 @@
+﻿@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Historial de Pagos</h3>
+
+<div class="mb-3">
+    <a href="/pay/create" class="btn btn-primary">Nuevo Pago</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID Pago</th>
+        <th>ID Venta</th>
+        <th>Monto</th>
+        <th>Fecha de Pago</th>
+        <th>Método de Pago</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (pays == null)
+    {
+        <tr>
+            <td colspan="6">Cargando pagos...</td>
+        </tr>
+    }
+    else if (!pays.Any())
+    {
+        <tr>
+            <td colspan="6">No hay pagos registrados.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var pay in pays)
+        {
+            <tr>
+                <td>@pay.id_pago</td>
+                <td>@pay.id_venta</td>
+                <td>@pay.monto.ToString("C")</td>
+                <td>@pay.fecha_pago.ToShortDateString()</td>
+                <td>@pay.metodo_pago</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(pay.id_pago)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<PayEntity>? pays;
+
+    protected override async Task OnInitializedAsync()
+    {
+        pays = await Task.Run(() => PayLog.PayList());
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/pay/update/{id}");
+    }
+}
