@@ -1,6 +1,13 @@
-@page "/UpdateSalePage"
-<h3>UpdateSalePage</h3>
+@page "/sale/update/{Id:int}"
+@rendermode InteractiveServer
+@using Presentation.Sale
+
+<UpdateSaleComponent Id="Id" />
 
 @code {
-    
+    [Parameter]
+    public int Id { get; set; }
+
+    public static IComponentRenderMode InteractiveServer { get; set; }
+
 }
