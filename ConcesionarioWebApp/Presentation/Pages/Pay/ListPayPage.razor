@@ -1,5 +1,9 @@
-﻿<h3>ListPayPage</h3>
+﻿@page "/pay/list"
+@rendermode InteractiveServer
+@using Presentation.Pay
 
 @code {
-    
+    public static IComponentRenderMode InteractiveServer { get; set; }
 }
+
+<ListPayComponent />
