@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear una nueva garantía en la base de datos.
          */
-        public void CreateWarranty(WarrantyEntity objWarranty)
+        public static void CreateWarranty(WarrantyEntity objWarranty)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todas las garantías existentes en la base de datos.
          */
-        public List<WarrantyEntity> WarrantyList()
+        public static List<WarrantyEntity> WarrantyList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza una garantía existente en la base de datos.
          */
-        public void UpdateWarranty(WarrantyEntity objWarranty)
+        public static void UpdateWarranty(WarrantyEntity objWarranty)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {

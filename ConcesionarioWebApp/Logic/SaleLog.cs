@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear una nueva venta en la base de datos.
          */
-        public void CreateSale(SaleEntity objSale)
+        public static void CreateSale(SaleEntity objSale)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todas las ventas existentes en la base de datos.
          */
-        public List<SaleEntity> SaleList()
+        public static List<SaleEntity> SaleList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza una venta existente en la base de datos.
          */
-        public void UpdateSale(SaleEntity objSale)
+        public static void UpdateSale(SaleEntity objSale)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {

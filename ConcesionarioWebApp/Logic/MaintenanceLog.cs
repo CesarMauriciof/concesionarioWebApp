@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear un nuevo mantenimiento en la base de datos.
          */
-        public void CreateMaintenance(MaintenanceEntity objMaintenance)
+        public static void CreateMaintenance(MaintenanceEntity objMaintenance)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todos los mantenimientos existentes en la base de datos.
          */
-        public List<MaintenanceEntity> MaintenanceList()
+        public static List<MaintenanceEntity> MaintenanceList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza un mantenimiento existente en la base de datos.
          */
-        public void UpdateMaintenance(MaintenanceEntity objMaintenance)
+        public static void UpdateMaintenance(MaintenanceEntity objMaintenance)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {

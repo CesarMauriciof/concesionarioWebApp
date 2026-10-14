@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear un nuevo vehículo en la base de datos.
          */
-        public void CreateVehicle(VehicleEntity objVehicle)
+        public static void CreateVehicle(VehicleEntity objVehicle)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todos los vehículos existentes en la base de datos.
          */
-        public List<VehicleEntity> VehicleList()
+        public static List<VehicleEntity> VehicleList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza un vehículo existente en la base de datos.
          */
-        public void UpdateVehicle(VehicleEntity objVehicle)
+        public static void UpdateVehicle(VehicleEntity objVehicle)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {

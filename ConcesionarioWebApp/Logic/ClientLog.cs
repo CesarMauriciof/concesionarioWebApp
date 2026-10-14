@@ -8,7 +8,7 @@ namespace Logic
         /*
          * Método que permite crear un nuevo cliente en la base de datos.
          */
-        public void CreateClient(ClientEntity objClient)
+        public static void CreateClient(ClientEntity objClient)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -20,7 +20,7 @@ namespace Logic
         /*
          * Método que devuelve una lista de todos los clientes existentes en la base de datos.
          */
-        public List<ClientEntity> ClientList()
+        public static List<ClientEntity> ClientList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
@@ -31,7 +31,7 @@ namespace Logic
         /*
          * Método que actualiza un cliente existente en la base de datos.
          */
-        public void UpdateClient(ClientEntity objClient)
+        public static void UpdateClient(ClientEntity objClient)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
