@@ -28,9 +28,19 @@
         <InputNumber @bind-Value="objEmployee.Salario" class="form-control" />
     </div>
 
+    <!-- Selector dinámico de Sede en lugar de un número ciego -->
     <div class="mb-3">
-        <label class="form-label">ID Sede:</label>
-        <InputNumber @bind-Value="objEmployee.IdSede" class="form-control" />
+        <label class="form-label">Sede:</label>
+        <InputSelect @bind-Value="objEmployee.IdSede" class="form-control">
+            <option value="0">Seleccione una sede...</option>
+            @if (headquartersList != null)
+            {
+                @foreach (var hq in headquartersList)
+                {
+                    <option value="@hq.IdSede">@hq.NombreSede - @hq.Ciudad</option>
+                }
+            }
+        </InputSelect>
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar Empleado</button>
@@ -45,12 +55,31 @@
 @code {
     private EmployeeEntity objEmployee = new EmployeeEntity();
     private string? message;
+    private List<HeadquartersEntity> headquartersList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Cargamos las sedes disponibles para poblar el menú desplegable
+            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar las sedes: {ex.Message}";
+        }
+    }
 
     private void SaveEmployee()
     {
         try
         {
-            // Asegúrate de tener implementado CreateEmployee en tu capa Logic
+            if (objEmployee.IdSede == 0)
+            {
+                message = "Debe seleccionar una sede válida.";
+                return;
+            }
+
             EmployeeLog.CreateEmployee(objEmployee);
             message = "¡Empleado guardado con éxito!";
             objEmployee = new EmployeeEntity();
