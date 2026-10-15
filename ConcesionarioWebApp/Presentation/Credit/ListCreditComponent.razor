@@ -1,0 +1,68 @@
+﻿@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Historial de Créditos Bancarios</h3>
+
+<div class="mb-3">
+    <a href="/credit/create" class="btn btn-primary">Nuevo Crédito</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID Crédito</th>
+        <th>ID Pago</th>
+        <th>Entidad Bancaria</th>
+        <th>Monto Aprobado</th>
+        <th>Cuotas</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (credits == null)
+    {
+        <tr>
+            <td colspan="6">Cargando créditos...</td>
+        </tr>
+    }
+    else if (!credits.Any())
+    {
+        <tr>
+            <td colspan="6">No hay créditos registrados.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var credit in credits)
+        {
+            <tr>
+                <td>@credit.id_credito</td>
+                <td>@credit.id_pago</td>
+                <td>@credit.entidad_bancaria</td>
+                <td>@credit.monto_aprobado.ToString("C")</td>
+                <td>@credit.numero_cuotas</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(credit.id_credito)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<CreditEntity>? credits;
+
+    protected override async Task OnInitializedAsync()
+    {
+        credits = await Task.Run(() => CreditLog.CreditList());
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/credit/update/{id}");
+    }
+}

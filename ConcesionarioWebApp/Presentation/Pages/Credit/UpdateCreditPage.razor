@@ -1,0 +1,12 @@
+﻿@page "/credit/update/{id_credito:int}"
+@rendermode InteractiveServer
+@using Presentation.Credit
+
+<UpdateSaleComponent id_credito="id_credito" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public static IComponentRenderMode InteractiveServer { get; set; }
+}

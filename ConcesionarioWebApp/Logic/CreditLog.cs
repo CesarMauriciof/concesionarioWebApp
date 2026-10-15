@@ -8,7 +8,7 @@ public class CreditLog
     /*
      * Método que permite crear una nueva venta en la base de datos.
      */
-    public static void CreateCredti(CreditEntity objCredit)
+    public static void CreateCredit(CreditEntity objCredit)
     {
         using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
         {
