@@ -1,0 +1,11 @@
+@page "/warranty/update/{Id:int}"
+@using Presentation.Warranty
+@rendermode InteractiveServer
+
+<UpdateWarrantyComponent Id="Id" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+}
