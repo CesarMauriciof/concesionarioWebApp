@@ -1,0 +1,64 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Gestión de Detalles de Ventas</h3>
+
+<div class="mb-3">
+    <a href="/saledetail/create" class="btn btn-primary">Nuevo Detalle</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID Detalle</th>
+        <th>ID Venta</th>
+        <th>ID Vehículo</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (details == null)
+    {
+        <tr>
+            <td colspan="4">Cargando detalles...</td>
+        </tr>
+    }
+    else if (!details.Any())
+    {
+        <tr>
+            <td colspan="4">No hay detalles registrados.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var detail in details)
+        {
+            <tr>
+                <td>@detail.id_detalle</td>
+                <td>@detail.id_venta</td>
+                <td>@detail.id_vehiculo</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(detail.id_detalle)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<SaleDetailEntity>? details;
+
+    protected override async Task OnInitializedAsync()
+    {
+        details = await Task.Run(() => SaleDetailLog.SaleDetailList());
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/saledetail/update/{id}");
+    }
+}

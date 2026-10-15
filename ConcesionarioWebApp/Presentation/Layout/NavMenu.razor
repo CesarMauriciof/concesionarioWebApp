@@ -24,30 +24,25 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
-        
+
         <div class="nav-item px-3">
-<<<<<<< HEAD
             <NavLink class="nav-link" href="/pay/create">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Crear Pago
             </NavLink>
         </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/sale/create">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Crear Venta
-=======
-        <NavLink class="nav-link" href="/pay/create"/>
-        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Crear Pago
-        </div>
+        
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/sale/list">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ventas
-                
->>>>>>> origin/feature/SCRUM-61-codificar-las-funcionalidades-CRUD-tabla-venta
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/saledetail/list">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Detalle Venta
             </NavLink>
         </div>
     </nav>
-</div>
 
 @code {
     private bool collapseNavMenu = true;
@@ -60,3 +55,5 @@
     }
 
 }
+
+</div>
