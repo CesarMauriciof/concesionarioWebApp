@@ -1,0 +1,71 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Gestión de Empleados</h3>
+
+<div class="mb-3">
+    <a href="/employee/create" class="btn btn-primary">Nuevo Empleado</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Cédula</th>
+        <th>Nombre</th>
+        <th>Cargo</th>
+        <th>Salario</th>
+        <th>ID Sede</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (employees == null)
+    {
+        <tr>
+            <td colspan="7">Cargando empleados...</td>
+        </tr>
+    }
+    else if (!employees.Any())
+    {
+        <tr>
+            <td colspan="7">No hay empleados registrados.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var emp in employees)
+        {
+            <tr>
+                <td>@emp.IdEmpleado</td>
+                <td>@emp.Cedula</td>
+                <td>@emp.Nombre</td>
+                <td>@emp.Cargo</td>
+                <td>@emp.Salario.ToString("C")</td>
+                <td>@emp.IdSede</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(emp.IdEmpleado)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<EmployeeEntity>? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Asegúrate de tener EmployeeList() en tu Logic
+        employees = await Task.Run(() => EmployeeLog.EmployeeList());
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/employee/update/{id}");
+    }
+}

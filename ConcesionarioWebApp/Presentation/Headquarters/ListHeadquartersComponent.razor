@@ -1,0 +1,67 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Gestión de Sedes</h3>
+
+<div class="mb-3">
+    <a href="/headquarters/create" class="btn btn-primary">Nueva Sede</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID Sede</th>
+        <th>Nombre de Sede</th>
+        <th>Ciudad</th>
+        <th>Dirección</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (headquartersList == null)
+    {
+        <tr>
+            <td colspan="5">Cargando sedes...</td>
+        </tr>
+    }
+    else if (!headquartersList.Any())
+    {
+        <tr>
+            <td colspan="5">No hay sedes registradas.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var hq in headquartersList)
+        {
+            <tr>
+                <td>@hq.IdSede</td>
+                <td>@hq.NombreSede</td>
+                <td>@hq.Ciudad</td>
+                <td>@hq.Direccion</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(hq.IdSede)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@code {
+    private List<HeadquartersEntity>? headquartersList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Asegúrate de tener HeadquartersList() en tu Logic
+        headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/headquarters/update/{id}");
+    }
+}

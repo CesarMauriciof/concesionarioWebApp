@@ -1,0 +1,13 @@
+@page "/employee/update/{Id:int}"
+@rendermode InteractiveServer
+@using Presentation.Employee
+
+<UpdateEmployeeComponent Id="Id" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    
+    public static IComponentRenderMode InteractiveServer { get; set; }
+
+}
