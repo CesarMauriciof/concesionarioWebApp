@@ -1,0 +1,83 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Listado de Mantenimientos</h3>
+
+<div class="mb-3">
+    <a href="/maintenance/create" class="btn btn-primary">Nuevo Mantenimiento</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID Mantenimiento</th>
+        <th>ID Garantía</th>
+        <th>Kilometraje</th>
+        <th>Año</th>
+        <th>Servicios Realizados</th>
+        <th>Fecha Programada</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (maintenances == null)
+    {
+        <tr>
+            <td colspan="7">Cargando mantenimientos...</td>
+        </tr>
+    }
+    else if (!maintenances.Any())
+    {
+        <tr>
+            <td colspan="7">No hay mantenimientos registrados.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var maintenance in maintenances)
+        {
+            <tr>
+                <td>@maintenance.id_mantenimiento</td>
+                <td>@maintenance.id_garantia</td>
+                <td>@maintenance.kilometraje.ToString("N0") km</td>
+                <td>@maintenance.año_mantenimiento</td>
+                <td>@maintenance.servicios_realizados</td>
+                <td>@maintenance.fecha_programada.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(maintenance.id_mantenimiento)">
+                        Editar
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private List<MaintenanceEntity>? maintenances;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            maintenances = await Task.Run(() => MaintenanceLog.MaintenanceList());
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar los mantenimientos: {ex.Message}";
+        }
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/maintenance/update/{id}");
+    }
+}
