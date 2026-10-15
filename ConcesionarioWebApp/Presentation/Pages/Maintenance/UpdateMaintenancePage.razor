@@ -1,0 +1,11 @@
+@page "/maintenance/update/{Id:int}"
+@using Presentation.Maintenance
+@rendermode InteractiveServer
+
+<UpdateMaintenanceComponent Id="Id" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+}
