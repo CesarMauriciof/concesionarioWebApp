@@ -1,0 +1,100 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+
+<h3>Actualizar Garantía (ID: @Id)</h3>
+
+@if (objWarranty == null)
+{
+    <p>Cargando datos de la garantía...</p>
+}
+else
+{
+    <EditForm Model="objWarranty" OnValidSubmit="UpdateWarranty" FormName="FrmWarrantyUpdate">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Detalle de Venta:</label>
+            <InputSelect @bind-Value="objWarranty.id_detalle" class="form-control">
+                <option value="0">-- Seleccione un Detalle de Venta --</option>
+                @if (saleDetails != null)
+                {
+                    @foreach (var detail in saleDetails)
+                    {
+                        <option value="@detail.id_detalle">
+                            Detalle #@detail.id_detalle - Venta #@detail.id_venta - Vehículo #@detail.id_vehiculo
+                        </option>
+                    }
+                }
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Fecha de Inicio:</label>
+            <InputDate @bind-Value="objWarranty.fecha_inicio" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Condiciones:</label>
+            <InputTextArea @bind-Value="objWarranty.condiciones" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancelar</button>
+    </EditForm>
+}
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private WarrantyEntity? objWarranty;
+    private List<SaleDetailEntity>? saleDetails;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            saleDetails = await Task.Run(() => SaleDetailLog.SaleDetailList());
+            objWarranty = await Task.Run(() => WarrantyLog.WarrantyList().FirstOrDefault(w => w.id_garantia == Id));
+
+            if (objWarranty == null)
+            {
+                message = "No se encontró la garantía especificada.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar la garantía: {ex.Message}";
+        }
+    }
+
+    private void UpdateWarranty()
+    {
+        try
+        {
+            if (objWarranty != null)
+            {
+                WarrantyLog.UpdateWarranty(objWarranty);
+                message = "¡Garantía actualizada con éxito!";
+                NavManager.NavigateTo("/warranty/list");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al actualizar: {ex.Message}";
+        }
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/warranty/list");
+    }
+}

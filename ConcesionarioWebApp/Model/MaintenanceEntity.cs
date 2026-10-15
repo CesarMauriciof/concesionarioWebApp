@@ -11,9 +11,12 @@ public class MaintenanceEntity
     public int id_mantenimiento { get; set; }
 
     [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una garantía.")]
     public int id_garantia { get; set; }
 
-    [ForeignKey("id_garantia")]
+    // Relación Muchos a Uno: Un Mantenimiento pertenece a una Garantía
+    [ForeignKey(nameof(id_garantia))]
+    [InverseProperty(nameof(WarrantyEntity.Mantenimientos))]
     public virtual WarrantyEntity? Garantia { get; set; }
 
     [Required]
@@ -28,6 +31,4 @@ public class MaintenanceEntity
 
     [Required]
     public DateTime fecha_programada { get; set; }
-    // Relación
-    public WarrantyEntity Garantias { get; set; }
 }

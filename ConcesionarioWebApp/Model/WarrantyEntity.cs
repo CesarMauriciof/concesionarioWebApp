@@ -15,6 +15,7 @@ public class WarrantyEntity
 
     // Llave foránea a DetalleVenta
     [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un detalle de venta.")]
     public int id_detalle { get; set; }
 
     [ForeignKey("id_detalle")]
@@ -28,6 +29,6 @@ public class WarrantyEntity
     [StringLength(200)]
     public string condiciones { get; set; } = string.Empty;
     
-    // Relación
-    public ICollection<MaintenanceEntity> Mantenimientos { get; set; }
+    // Relación Uno a Muchos: Una Garantía puede tener varios Mantenimientos
+    public virtual ICollection<MaintenanceEntity> Mantenimientos { get; set; } = new List<MaintenanceEntity>();
 }
