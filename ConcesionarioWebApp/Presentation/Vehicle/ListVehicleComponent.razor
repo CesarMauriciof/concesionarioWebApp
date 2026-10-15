@@ -1,0 +1,103 @@
+﻿@using ConcesionarioWebApp.Model
+@using Logic
+@inject NavigationManager Navigation
+
+<div class="container mt-4">
+    <div class="mb-3">
+        <button class="btn btn-primary" @onclick="NavigateToCreate">Nuevo Vehículo</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>Ocurrió un error:</strong> @errorMessage
+        </div>
+    }
+    else if (vehicles == null)
+    {
+        <div class="alert alert-info">Cargando vehículos...</div>
+    }
+    else if (!vehicles.Any())
+    {
+        <div class="alert alert-warning">No hay vehículos registrados en la base de datos. Usa el botón de arriba para crear uno.</div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>VIN</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Precio</th>
+                    <th>Sede</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in vehicles)
+                {
+                    <tr>
+                        <td>@v.IdVehiculo</td>
+                        <td>@v.Vin</td>
+                        <td>@v.Marca</td>
+                        <td>@v.Modelo</td>
+                        <td>@v.Precio.ToString("C")</td>
+                        <td>@v.IdSede</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" @onclick="() => NavigateToUpdate(v.IdVehiculo)">Editar</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => Delete(v.IdVehiculo)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<VehicleEntity> vehicles = new();
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        LoadVehicles();
+    }
+
+    private void LoadVehicles()
+    {
+        try
+        {
+            errorMessage = null;
+            vehicles = VehicleLog.VehicleList() ?? new List<VehicleEntity>();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void NavigateToCreate()
+    {
+        Navigation.NavigateTo("/CreateVehiclePage");
+    }
+
+    private void NavigateToUpdate(int id)
+    {
+        Navigation.NavigateTo($"/UpdateVehiclePage/{id}");
+    }
+
+    private void Delete(int id)
+    {
+        try
+        {
+            VehicleLog.DeleteVehicle(id);
+            LoadVehicles();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"No se pudo eliminar el vehículo: {ex.Message}";
+        }
+    }
+}

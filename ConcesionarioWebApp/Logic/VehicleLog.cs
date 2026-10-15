@@ -5,9 +5,6 @@ namespace Logic
 {
     public class VehicleLog
     {
-        /*
-         * Método que permite crear un nuevo vehículo en la base de datos.
-         */
         public static void CreateVehicle(VehicleEntity objVehicle)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
@@ -17,9 +14,6 @@ namespace Logic
             }
         }
 
-        /*
-         * Método que devuelve una lista de todos los vehículos existentes en la base de datos.
-         */
         public static List<VehicleEntity> VehicleList()
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
@@ -28,15 +22,35 @@ namespace Logic
             }
         }
 
-        /*
-         * Método que actualiza un vehículo existente en la base de datos.
-         */
+        // ➕ Método nuevo para buscar por ID (necesario para la edición)
+        public static VehicleEntity? GetVehicleById(int id)
+        {
+            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            {
+                return db.Vehicles.Find(id);
+            }
+        }
+
         public static void UpdateVehicle(VehicleEntity objVehicle)
         {
             using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
             {
                 db.Vehicles.Update(objVehicle);
                 db.SaveChanges();
+            }
+        }
+
+        // ➕ Método nuevo para eliminar un vehículo
+        public static void DeleteVehicle(int id)
+        {
+            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            {
+                var vehicle = db.Vehicles.Find(id);
+                if (vehicle != null)
+                {
+                    db.Vehicles.Remove(vehicle);
+                    db.SaveChanges();
+                }
             }
         }
     }
