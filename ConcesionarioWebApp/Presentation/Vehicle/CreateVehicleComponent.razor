@@ -1,4 +1,6 @@
-﻿@using ConcesionarioWebApp.Model
+﻿@page "/CreateVehiclePage"
+@using ConcesionarioWebApp.Model
+@using Model
 @using Logic
 @inject NavigationManager Navigation
 
@@ -29,20 +31,55 @@
     </div>
 
     <div class="mb-3">
-        <label class="form-label">ID Sede:</label>
-        <InputNumber class="form-control" @bind-Value="vehicle.IdSede" />
+        <label class="form-label">Sede:</label>
+        <InputSelect TValue="int" class="form-control" @bind-Value="vehicle.IdSede">
+            <option value="0">-- Seleccione una sede --</option>
+            @if (headquartersList != null)
+            {
+                @foreach (var sede in headquartersList)
+                {
+                    <option value="@sede.IdSede">@sede.NombreSede</option>
+                }
+            }
+        </InputSelect>
     </div>
 
     <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="/ListVehiclePage" class="btn btn-secondary">Cancelar</a>
+    <a href="/ListVehiclePage" class="btn btn-secondary ms-2">Cancelar</a>
 </EditForm>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
 
 @code {
     private VehicleEntity vehicle = new();
+    private List<HeadquartersEntity>? headquartersList;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar las sedes: {ex.Message}";
+        }
+    }
 
     private void HandleValidSubmit()
     {
-        VehicleLog.CreateVehicle(vehicle);
-        Navigation.NavigateTo("/vehiculos");
+        try
+        {
+            VehicleLog.CreateVehicle(vehicle);
+            Navigation.NavigateTo("/ListVehiclePage");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al registrar el vehículo: {ex.Message}";
+        }
     }
 }
