@@ -1,4 +1,4 @@
-using ConcesionarioWebApp.Data;
+using Data;
 using Microsoft.EntityFrameworkCore;
 using Model;
 

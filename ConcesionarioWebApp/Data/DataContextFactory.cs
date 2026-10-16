@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace ConcesionarioWebApp.Data
+namespace Data
 {
     public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
     {
@@ -10,7 +10,7 @@ namespace ConcesionarioWebApp.Data
             var optionsBuilder = new DbContextOptionsBuilder<DataContext>();
 
             var connectionString =
-                "Server=localhost;Port=3306;Database=Concesionario;User=root;Password=admin;";
+                "Server=localhost;Port=3306;Database=Concesionario;User=root;Password=r00t123;";
 
             optionsBuilder.UseMySql(
                 connectionString,

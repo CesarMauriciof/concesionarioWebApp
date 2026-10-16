@@ -1,5 +1,5 @@
-﻿using ConcesionarioWebApp.Data;
-using ConcesionarioWebApp.Model;
+﻿using ConcesionarioWebApp.Model;
+using Data;
 
 namespace Logic
 {

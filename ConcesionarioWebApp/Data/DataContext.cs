@@ -2,7 +2,7 @@ using ConcesionarioWebApp.Model;
 using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace ConcesionarioWebApp.Data
+namespace Data
 {
     public class DataContext : DbContext
     {
@@ -27,7 +27,6 @@ namespace ConcesionarioWebApp.Data
                 optionsBuilder.UseMySql("server=localhost;user=root;password=r00t123;port=3306;database=concesionario",
                     new MySqlServerVersion(new Version(8, 0, 34)));
             }
-            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
