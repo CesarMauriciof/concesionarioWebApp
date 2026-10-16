@@ -10,7 +10,7 @@
 }
 else
 {
-    <EditForm Model="objMaintenance" OnValidSubmit="UpdateMaintenance" FormName="FrmMaintenanceUpdate">
+    <EditForm Model="objMaintenance" OnValidSubmit="UpdateMaintenance">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
@@ -105,6 +105,6 @@ else
 
     private void Cancel()
     {
-        NavManager.NavigateTo("/maintenance/list");
+        NavManager.NavigateTo("ListMaintenancePage");
     }
 }

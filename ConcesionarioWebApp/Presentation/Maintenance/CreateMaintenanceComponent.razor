@@ -4,7 +4,7 @@
 
 <h3>Programar Mantenimiento</h3>
 
-<EditForm Model="objMaintenance" OnValidSubmit="SaveMaintenance" FormName="FrmMaintenance">
+<EditForm Model="objMaintenance" OnValidSubmit="SaveMaintenance">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -54,7 +54,8 @@
 }
 
 @code {
-    MaintenanceEntity objMaintenance = NewMaintenance();
+    private MaintenanceEntity objMaintenance = NewMaintenance();
+
     private string? successMessage;
     List<WarrantyEntity> warranties = new List<WarrantyEntity>();
 
@@ -62,7 +63,6 @@
     {
         try
         {
-            // Se cargan las garantías para vincular el mantenimiento a la garantía correspondiente
             warranties = await Task.Run(() => WarrantyLog.WarrantyList());
         }
         catch (Exception ex)
