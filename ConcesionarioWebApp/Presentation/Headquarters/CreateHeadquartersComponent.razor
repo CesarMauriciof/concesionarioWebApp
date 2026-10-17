@@ -2,50 +2,37 @@
 @using Model
 @inject NavigationManager NavManager
 
-<h3>Registrar Nuevo Empleado</h3>
+<h3>Actualizar Sede ID: @Id</h3>
 
-<EditForm Model="objEmployee" OnValidSubmit="SaveEmployee" FormName="FrmEmployee">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+@if (objHeadquarters == null)
+{
+    <p>Cargando datos de la sede...</p>
+}
+else
+{
+    <EditForm Model="objHeadquarters" OnValidSubmit="UpdateHeadquarters">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-    <div class="mb-3">
-        <label class="form-label">Cédula:</label>
-        <InputText @bind-Value="objEmployee.Cedula" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Nombre de la Sede:</label>
+            <InputText @bind-Value="objHeadquarters.NombreSede" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Nombre:</label>
-        <InputText @bind-Value="objEmployee.Nombre" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Ciudad:</label>
+            <InputText @bind-Value="objHeadquarters.Ciudad" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Cargo:</label>
-        <InputText @bind-Value="objEmployee.Cargo" class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label class="form-label">Dirección:</label>
+            <InputText @bind-Value="objHeadquarters.Direccion" class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Salario:</label>
-        <InputNumber @bind-Value="objEmployee.Salario" class="form-control" />
-    </div>
-
-    <!-- Selector dinámico de Sede en lugar de un número ciego -->
-    <div class="mb-3">
-        <label class="form-label">Sede:</label>
-        <InputSelect @bind-Value="objEmployee.IdSede" class="form-control">
-            <option value="0">Seleccione una sede...</option>
-            @if (headquartersList != null)
-            {
-                @foreach (var hq in headquartersList)
-                {
-                    <option value="@hq.IdSede">@hq.NombreSede - @hq.Ciudad</option>
-                }
-            }
-        </InputSelect>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Guardar Empleado</button>
-    <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancelar</button>
-</EditForm>
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancelar</button>
+    </EditForm>
+}
 
 @if (message != null)
 {
@@ -53,46 +40,44 @@
 }
 
 @code {
-    private EmployeeEntity objEmployee = new EmployeeEntity();
+    [Parameter]
+    public int Id { get; set; }
+
+    private HeadquartersEntity? objHeadquarters;
     private string? message;
     private List<HeadquartersEntity> headquartersList = new();
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        headquartersList = HeadquartersLog.HeadquartersList();
+        objHeadquarters = headquartersList.FirstOrDefault(h => h.IdSede == Id);
+
+        if (objHeadquarters == null)
         {
-            // Cargamos las sedes disponibles para poblar el menú desplegable
-            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
-        }
-        catch (Exception ex)
-        {
-            message = $"Error al cargar las sedes: {ex.Message}";
+            message = "No se encontró la sede especificada.";
         }
     }
 
-    private void SaveEmployee()
+    private void UpdateHeadquarters()
     {
         try
         {
-            if (objEmployee.IdSede == 0)
+            if (objHeadquarters != null)
             {
-                message = "Debe seleccionar una sede válida.";
-                return;
+                // Asegúrate de tener UpdateHeadquarters en tu Logic
+                HeadquartersLog.UpdateHeadquarters(objHeadquarters);
+                message = "¡Sede actualizada con éxito!";
+                NavManager.NavigateTo("/headquarters/list");
             }
-
-            EmployeeLog.CreateEmployee(objEmployee);
-            message = "¡Empleado guardado con éxito!";
-            objEmployee = new EmployeeEntity();
-            NavManager.NavigateTo("/employee/list");
         }
         catch (Exception ex)
         {
-            message = $"Error al guardar el empleado: {ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 
     private void Cancel()
     {
-        NavManager.NavigateTo("/employee/list");
+        NavManager.NavigateTo("/headquarters/list");
     }
 }
