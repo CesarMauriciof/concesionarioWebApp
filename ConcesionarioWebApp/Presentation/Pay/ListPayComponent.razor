@@ -1,6 +1,7 @@
 ﻿@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Historial de Pagos</h3>
 
@@ -46,6 +47,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(pay.id_pago)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(pay.id_pago)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -53,12 +57,50 @@
     </tbody>
 </table>
 
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
 @code {
+    private string? message;
     private List<PayEntity>? pays;
 
     protected override async Task OnInitializedAsync()
     {
-        pays = await Task.Run(() => PayLog.PayList());
+        await LoadPays();
+    }
+
+    private async Task LoadPays()
+    {
+        try
+        {
+            pays = await Task.Run(() => PayLog.PayList());
+        }
+        catch (Exception ex)
+        {
+            pays ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el pago #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            PayLog.DeletePay(id);
+            message = "Registro eliminado correctamente.";
+            await LoadPays();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el pago: {ex.InnerException?.Message ?? ex.Message}";
+        }
     }
 
     private void GoToUpdate(int id)

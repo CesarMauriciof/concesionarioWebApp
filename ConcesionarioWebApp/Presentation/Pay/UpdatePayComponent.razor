@@ -2,33 +2,53 @@
 @using Model
 @inject NavigationManager NavManager
 
-<h3>UpdateSaleComponent (ID: @Id)</h3>
+<h3>Actualizar Pago (ID: @Id)</h3>
 
-@if (objSale == null)
+@if (objPay == null)
 {
-    <p>Cargando datos de la venta...</p>
+    @if (message == null)
+    {
+        <p>Cargando datos del pago...</p>
+    }
 }
 else
 {
-    <EditForm Model="objSale" OnValidSubmit="UpdateSale">
+    <EditForm Model="objPay" OnValidSubmit="UpdatePay">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
         <div class="mb-3">
-            <label class="form-label">Fecha de Venta:</label>
-            <InputDate @bind-Value="objSale.fecha" class="form-control" />
+            <label class="form-label">Venta Asociada:</label>
+            <InputSelect @bind-Value="objPay.id_venta" class="form-control">
+                <option value="0">-- Seleccione una Venta --</option>
+                @foreach (var sale in sales)
+                {
+                    <option value="@sale.id_venta">
+                        Venta #@sale.id_venta (@sale.total_pagado.ToString("C"))
+                    </option>
+                }
+            </InputSelect>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Total Pagado:</label>
-            <InputNumber @bind-Value="objSale.total_pagado" class="form-control" />
+            <label class="form-label">Monto:</label>
+            <InputNumber @bind-Value="objPay.monto" class="form-control" />
         </div>
 
         <div class="mb-3">
-            <label class="form-label">ID Cliente:</label>
-            <InputNumber @bind-Value="objSale.id_cliente" class="form-control" />
+            <label class="form-label">Fecha de Pago:</label>
+            <InputDate @bind-Value="objPay.fecha_pago" class="form-control" />
         </div>
 
         <div class="mb-3">
-            <label class="form-label">ID Empleado:</label>
-            <InputNumber @bind-Value="objSale.id_empleado" class="form-control" />
+            <label class="form-label">Método de Pago:</label>
+            <InputSelect @bind-Value="objPay.metodo_pago" class="form-control">
+                <option value="">-- Seleccione Método --</option>
+                <option value="EFECTIVO">Efectivo</option>
+                <option value="TRANSFERENCIA">Transferencia Bancaria</option>
+                <option value="CREDITO">Crédito Bancario</option>
+                <option value="CHEQUE">Cheque</option>
+            </InputSelect>
         </div>
 
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -45,38 +65,47 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    private SaleEntity? objSale;
+    private PayEntity? objPay;
+    private List<SaleEntity> sales = new();
     private string? message;
 
     protected override async Task OnInitializedAsync()
     {
-        objSale = await Task.Run(() => SaleLog.SaleList().FirstOrDefault(s => s.id_venta == Id));
-
-        if (objSale == null)
-        {
-            message = "No se encontró la venta especificada.";
-        }
-    }
-
-    private void UpdateSale()
-    {
         try
         {
-            if (objSale != null)
+            sales = await Task.Run(() => SaleLog.SaleList());
+            objPay = await Task.Run(() => PayLog.GetPayById(Id));
+
+            if (objPay == null)
             {
-                SaleLog.UpdateSale(objSale);
-                message = "¡Venta actualizada con éxito!";
-                NavManager.NavigateTo("/sale/list");
+                message = "No se encontró el pago especificado.";
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.Message}";
+            message = $"Error al cargar el pago: {ex.Message}";
+        }
+    }
+
+    private void UpdatePay()
+    {
+        try
+        {
+            if (objPay != null)
+            {
+                PayLog.UpdatePay(objPay);
+                message = "¡Pago actualizado con éxito!";
+                NavManager.NavigateTo("/pay/list");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 
     private void Cancel()
     {
-        NavManager.NavigateTo("/sale/list");
+        NavManager.NavigateTo("/pay/list");
     }
 }

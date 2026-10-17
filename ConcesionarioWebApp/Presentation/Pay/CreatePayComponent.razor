@@ -48,6 +48,7 @@
 
     <br />
     <button type="submit" class="btn btn-primary">Guardar Pago</button>
+    <a href="/pay/list" class="btn btn-secondary ms-2">Cancelar</a>
 </EditForm>
 
 @if (successMessage != null)
@@ -87,11 +88,11 @@
             successMessage = $"El pago por valor de ${objPay.monto} se guardó exitosamente!";
             objPay = new PayEntity() { fecha_pago = DateTime.Now };
 
-            NavManager.NavigateTo("pay/list");
+            NavManager.NavigateTo("/pay/list");
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el pago: {ex.Message}";
+            successMessage = $"Error al registrar el pago: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }
