@@ -1,6 +1,7 @@
 ﻿@using ConcesionarioWebApp.Model
 @using Logic
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <div class="container mt-4">
     <div class="mb-3">
@@ -88,8 +89,13 @@
         Navigation.NavigateTo($"/UpdateVehiclePage/{id}");
     }
 
-    private void Delete(int id)
+    private async Task Delete(int id)
     {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el vehículo #{id}?"))
+        {
+            return;
+        }
+
         try
         {
             VehicleLog.DeleteVehicle(id);
@@ -97,7 +103,7 @@
         }
         catch (Exception ex)
         {
-            errorMessage = $"No se pudo eliminar el vehículo: {ex.Message}";
+            errorMessage = $"No se pudo eliminar el vehículo: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }
