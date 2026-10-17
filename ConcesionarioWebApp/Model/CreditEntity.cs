@@ -14,6 +14,7 @@ public class CreditEntity
 
     // Llave foránea a Pago
     [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un pago.")]
     public int id_pago { get; set; }
 
     // Relación Muchos a Uno: Un Crédito está vinculado a un Pago específico
@@ -26,7 +27,7 @@ public class CreditEntity
     public string entidad_bancaria { get; set; } = string.Empty;
 
     [Required]
-    [Column(TypeName = "decimal(10,2)")]
+    [Column(TypeName = "decimal(12,2)")]
     public decimal monto_aprobado { get; set; }
 
     [Required]

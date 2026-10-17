@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Listado de Mantenimientos</h3>
 
@@ -48,6 +49,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(maintenance.id_mantenimiento)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(maintenance.id_mantenimiento)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -66,13 +70,38 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadMaintenances();
+    }
+
+    private async Task LoadMaintenances()
+    {
         try
         {
             maintenances = await Task.Run(() => MaintenanceLog.MaintenanceList());
         }
         catch (Exception ex)
         {
-            message = $"Error al cargar los mantenimientos: {ex.Message}";
+            maintenances ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el mantenimiento #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            MaintenanceLog.DeleteMaintenance(id);
+            message = "Registro eliminado correctamente.";
+            await LoadMaintenances();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el mantenimiento: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

@@ -19,13 +19,16 @@ public class SaleEntity
     [Column("total_pagado", TypeName = "decimal(12,2)")]
     public decimal total_pagado { get; set; }
 
-    [Required]
+    // Nullable porque la columna admite NULL en la BD (existen ventas sin empleado)
+    [Required(ErrorMessage = "Debe seleccionar un cliente.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un cliente.")]
     [Column("id_cliente")]
-    public int id_cliente { get; set; }
+    public int? id_cliente { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Debe seleccionar un empleado.")]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un empleado.")]
     [Column("id_empleado")]
-    public int id_empleado { get; set; }
+    public int? id_empleado { get; set; }
 
     // Propiedad de navegación: Una venta tiene muchos detalles
     public virtual ICollection<SaleDetailEntity> DetallesVenta { get; set; } = new List<SaleDetailEntity>();

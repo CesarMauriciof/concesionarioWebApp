@@ -1,11 +1,10 @@
-@page "/UpdateVehiclePage"
+@page "/UpdateVehiclePage/{Id:int}"
 @using Presentation.Vehicle
 @rendermode InteractiveServer
 
-<UpdateVehicleComponent></UpdateVehicleComponent>
+<UpdateVehicleComponent Id="Id"></UpdateVehicleComponent>
 
 @code {
     [Parameter]
     public int Id { get; set; }
-
 }

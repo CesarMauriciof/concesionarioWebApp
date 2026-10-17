@@ -6,7 +6,10 @@
 
 @if (objEmployee == null)
 {
-    <p>Cargando datos del empleado...</p>
+    @if (message == null)
+    {
+        <p>Cargando datos del empleado...</p>
+    }
 }
 else
 {
@@ -35,8 +38,14 @@ else
         </div>
 
         <div class="mb-3">
-            <label class="form-label">ID Sede:</label>
-            <InputNumber @bind-Value="objEmployee.IdSede" class="form-control" />
+            <label class="form-label">Sede:</label>
+            <InputSelect @bind-Value="objEmployee.IdSede" class="form-control">
+                <option value="0">Seleccione una sede...</option>
+                @foreach (var hq in headquartersList)
+                {
+                    <option value="@hq.IdSede">@hq.NombreSede - @hq.Ciudad</option>
+                }
+            </InputSelect>
         </div>
 
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -55,16 +64,23 @@ else
 
     private EmployeeEntity? objEmployee;
     private string? message;
-    private List<EmployeeEntity> employees = new();
+    private List<HeadquartersEntity> headquartersList = new();
 
     protected override async Task OnInitializedAsync()
     {
-        employees = EmployeeLog.EmployeeList();
-        objEmployee = employees.FirstOrDefault(e => e.IdEmpleado == Id);
-
-        if (objEmployee == null)
+        try
         {
-            message = "No se encontró el empleado especificado.";
+            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+            objEmployee = await Task.Run(() => EmployeeLog.GetEmployeeById(Id));
+
+            if (objEmployee == null)
+            {
+                message = "No se encontró el empleado especificado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar el empleado: {ex.Message}";
         }
     }
 
@@ -74,7 +90,6 @@ else
         {
             if (objEmployee != null)
             {
-                // Asegúrate de tener UpdateEmployee en tu Logic
                 EmployeeLog.UpdateEmployee(objEmployee);
                 message = "¡Empleado actualizado con éxito!";
                 NavManager.NavigateTo("/employee/list");
@@ -82,7 +97,7 @@ else
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.Message}";
+            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

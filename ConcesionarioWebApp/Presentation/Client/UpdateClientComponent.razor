@@ -60,8 +60,7 @@ else
     {
         try
         {
-            var clients = await Task.Run(() => ClientLog.ClientList());
-            objClient = clients.FirstOrDefault(c => c.Id_Cliente == Id);
+            objClient = await Task.Run(() => ClientLog.GetClientById(Id));
 
             if (objClient == null)
             {
@@ -82,12 +81,12 @@ else
             {
                 ClientLog.UpdateClient(objClient);
                 successMessage = $"¡El cliente {objClient.Nombre} se actualizó exitosamente!";
-                NavManager.NavigateTo("/client/list");
+                NavManager.NavigateTo("/ListClientPage");
             }
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al actualizar el cliente: {ex.Message}";
+            successMessage = $"Error al actualizar el cliente: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }

@@ -10,7 +10,7 @@ public class CreditLog
      */
     public static void CreateCredit(CreditEntity objCredit)
     {
-        using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+        using (var db = new DataContext())
         {
             db.Credits.Add(objCredit);
             db.SaveChanges();
@@ -22,7 +22,7 @@ public class CreditLog
      */
     public static List<CreditEntity> CreditList()
     {
-        using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+        using (var db = new DataContext())
         {
             return db.Credits.ToList();
         }
@@ -33,10 +33,37 @@ public class CreditLog
      */
     public static void UpdateCredit(CreditEntity objCredit)
     {
-        using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+        using (var db = new DataContext())
         {
             db.Credits.Update(objCredit);
             db.SaveChanges();
+        }
+    }
+
+    /*
+     * Método que busca un crédito por su ID. Devuelve null si no existe.
+     */
+    public static CreditEntity? GetCreditById(int id)
+    {
+        using (var db = new DataContext())
+        {
+            return db.Credits.Find(id);
+        }
+    }
+
+    /*
+     * Método que elimina un crédito por su ID.
+     */
+    public static void DeleteCredit(int id)
+    {
+        using (var db = new DataContext())
+        {
+            var entity = db.Credits.Find(id);
+            if (entity != null)
+            {
+                db.Credits.Remove(entity);
+                db.SaveChanges();
+            }
         }
     }
 }

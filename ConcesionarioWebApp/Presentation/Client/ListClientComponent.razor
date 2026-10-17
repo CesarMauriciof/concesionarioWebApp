@@ -1,6 +1,7 @@
 ﻿@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Lista de Clientes</h3>
 
@@ -42,6 +43,7 @@ else
                 <td>@client.Direccion</td>
                 <td>
                     <button class="btn btn-primary btn-sm" @onclick="() => EditClient(client.Id_Cliente)">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(client.Id_Cliente)">Eliminar</button>
                 </td>
             </tr>
         }
@@ -60,13 +62,38 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadClients();
+    }
+
+    private async Task LoadClients()
+    {
         try
         {
             clients = await Task.Run(() => ClientLog.ClientList());
         }
         catch (Exception ex)
         {
+            clients ??= new();
             message = $"Error al cargar la lista de clientes: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el cliente #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            ClientLog.DeleteClient(id);
+            message = "Cliente eliminado correctamente.";
+            await LoadClients();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el cliente: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

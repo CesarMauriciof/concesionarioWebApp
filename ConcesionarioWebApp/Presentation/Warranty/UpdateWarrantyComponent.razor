@@ -63,7 +63,7 @@ else
         try
         {
             saleDetails = await Task.Run(() => SaleDetailLog.SaleDetailList());
-            objWarranty = await Task.Run(() => WarrantyLog.WarrantyList().FirstOrDefault(w => w.id_garantia == Id));
+            objWarranty = await Task.Run(() => WarrantyLog.GetWarrantyById(Id));
 
             if (objWarranty == null)
             {
@@ -89,7 +89,7 @@ else
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.Message}";
+            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

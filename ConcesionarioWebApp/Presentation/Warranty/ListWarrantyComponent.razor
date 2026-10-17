@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Listado de Garantías</h3>
 
@@ -44,6 +45,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(warranty.id_garantia)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(warranty.id_garantia)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -62,13 +66,38 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadWarranties();
+    }
+
+    private async Task LoadWarranties()
+    {
         try
         {
             warranties = await Task.Run(() => WarrantyLog.WarrantyList());
         }
         catch (Exception ex)
         {
-            message = $"Error al cargar las garantías: {ex.Message}";
+            warranties ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar la garantía #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            WarrantyLog.DeleteWarranty(id);
+            message = "Registro eliminado correctamente.";
+            await LoadWarranties();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar la garantía: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

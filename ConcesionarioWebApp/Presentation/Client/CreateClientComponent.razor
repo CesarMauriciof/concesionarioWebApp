@@ -57,7 +57,7 @@
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el cliente: {ex.Message}";
+            successMessage = $"Error al registrar el cliente: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }

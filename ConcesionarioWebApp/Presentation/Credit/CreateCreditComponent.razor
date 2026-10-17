@@ -40,6 +40,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar Crédito</button>
+    <a href="/credit/list" class="btn btn-secondary ms-2">Cancelar</a>
 </EditForm>
 
 @if (successMessage != null)
@@ -54,8 +55,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Se cargan los pagos registrados para vincular el crédito al ID de pago correspondiente
-        pays = await Task.Run(() => PayLog.PayList());
+        try
+        {
+            // Se cargan los pagos registrados para vincular el crédito al ID de pago correspondiente
+            pays = await Task.Run(() => PayLog.PayList());
+        }
+        catch (Exception ex)
+        {
+            successMessage = $"Error al cargar los pagos: {ex.Message}";
+        }
     }
 
     private void SaveCredit()
@@ -69,7 +77,7 @@
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el crédito: {ex.Message}";
+            successMessage = $"Error al registrar el crédito: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }

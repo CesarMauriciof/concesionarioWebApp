@@ -6,7 +6,10 @@
 
 @if (objDetail == null)
 {
-    <p>Cargando datos del detalle...</p>
+    @if (message == null)
+    {
+        <p>Cargando datos del detalle...</p>
+    }
 }
 else
 {
@@ -40,16 +43,21 @@ else
 
     private SaleDetailEntity? objDetail;
     private string? message;
-    private List<SaleDetailEntity> details = new();
 
     protected override async Task OnInitializedAsync()
     {
-        details = SaleDetailLog.SaleDetailList();
-        objDetail = details.FirstOrDefault(d => d.id_detalle == Id);
-
-        if (objDetail == null)
+        try
         {
-            message = "No se encontró el detalle de venta especificado.";
+            objDetail = await Task.Run(() => SaleDetailLog.GetSaleDetailById(Id));
+
+            if (objDetail == null)
+            {
+                message = "No se encontró el detalle de venta especificado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar el detalle: {ex.Message}";
         }
     }
 
@@ -66,7 +74,7 @@ else
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.Message}";
+            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

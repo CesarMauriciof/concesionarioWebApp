@@ -1,6 +1,7 @@
 ﻿@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Historial de Créditos Bancarios</h3>
 
@@ -46,6 +47,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(credit.id_credito)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(credit.id_credito)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -53,12 +57,50 @@
     </tbody>
 </table>
 
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
 @code {
+    private string? message;
     private List<CreditEntity>? credits;
 
     protected override async Task OnInitializedAsync()
     {
-        credits = await Task.Run(() => CreditLog.CreditList());
+        await LoadCredits();
+    }
+
+    private async Task LoadCredits()
+    {
+        try
+        {
+            credits = await Task.Run(() => CreditLog.CreditList());
+        }
+        catch (Exception ex)
+        {
+            credits ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el crédito #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            CreditLog.DeleteCredit(id);
+            message = "Registro eliminado correctamente.";
+            await LoadCredits();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el crédito: {ex.InnerException?.Message ?? ex.Message}";
+        }
     }
 
     private void GoToUpdate(int id)

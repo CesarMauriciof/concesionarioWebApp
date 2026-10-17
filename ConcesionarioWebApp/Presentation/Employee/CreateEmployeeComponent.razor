@@ -74,12 +74,6 @@
     {
         try
         {
-            if (objEmployee.IdSede == 0)
-            {
-                message = "Debe seleccionar una sede válida.";
-                return;
-            }
-
             EmployeeLog.CreateEmployee(objEmployee);
             message = "¡Empleado guardado con éxito!";
             objEmployee = new EmployeeEntity();
@@ -87,7 +81,7 @@
         }
         catch (Exception ex)
         {
-            message = $"Error al guardar el empleado: {ex.Message}";
+            message = $"Error al guardar el empleado: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

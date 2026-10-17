@@ -1,4 +1,5 @@
 ﻿@using ConcesionarioWebApp.Model
+@using Model
 @using Logic
 @inject NavigationManager Navigation
 
@@ -6,7 +7,10 @@
 
 @if (vehicle == null)
 {
-    <p><em>Cargando vehículo...</em></p>
+    @if (message == null)
+    {
+        <p><em>Cargando vehículo...</em></p>
+    }
 }
 else
 {
@@ -35,13 +39,27 @@ else
         </div>
 
         <div class="mb-3">
-            <label class="form-label">ID Sede:</label>
-            <InputNumber class="form-control" @bind-Value="vehicle.IdSede" />
+            <label class="form-label">Sede:</label>
+            <InputSelect TValue="int?" class="form-control" @bind-Value="vehicle.IdSede">
+                <option value="0">-- Seleccione una sede --</option>
+                @if (headquartersList != null)
+                {
+                    @foreach (var sede in headquartersList)
+                    {
+                        <option value="@sede.IdSede">@sede.NombreSede</option>
+                    }
+                }
+            </InputSelect>
         </div>
 
         <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="/vehiculos" class="btn btn-secondary">Cancelar</a>
+        <a href="/ListVehiclePage" class="btn btn-secondary ms-2">Cancelar</a>
     </EditForm>
+}
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
 }
 
 @code {
@@ -49,18 +67,40 @@ else
     public int Id { get; set; }
 
     private VehicleEntity? vehicle;
+    private List<HeadquartersEntity>? headquartersList;
+    private string? message;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        vehicle = VehicleLog.GetVehicleById(Id);
+        try
+        {
+            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+            vehicle = await Task.Run(() => VehicleLog.GetVehicleById(Id));
+
+            if (vehicle == null)
+            {
+                message = "No se encontró el vehículo especificado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar el vehículo: {ex.Message}";
+        }
     }
 
     private void HandleValidSubmit()
     {
-        if (vehicle != null)
+        try
         {
-            VehicleLog.UpdateVehicle(vehicle);
-            Navigation.NavigateTo("/vehiculos");
+            if (vehicle != null)
+            {
+                VehicleLog.UpdateVehicle(vehicle);
+                Navigation.NavigateTo("/ListVehiclePage");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al actualizar el vehículo: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }

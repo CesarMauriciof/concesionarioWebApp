@@ -10,7 +10,7 @@ namespace Logic
          */
         public static void CreateMaintenance(MaintenanceEntity objMaintenance)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Maintenances.Add(objMaintenance);
                 db.SaveChanges();
@@ -22,7 +22,7 @@ namespace Logic
          */
         public static List<MaintenanceEntity> MaintenanceList()
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 return db.Maintenances.ToList();
             }
@@ -33,13 +33,38 @@ namespace Logic
          */
         public static void UpdateMaintenance(MaintenanceEntity objMaintenance)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Maintenances.Update(objMaintenance);
                 db.SaveChanges();
             }
         }
+
+        /*
+         * Método que busca un mantenimiento por su ID. Devuelve null si no existe.
+         */
+        public static MaintenanceEntity? GetMaintenanceById(int id)
+        {
+            using (var db = new DataContext())
+            {
+                return db.Maintenances.Find(id);
+            }
+        }
+
+        /*
+         * Método que elimina un mantenimiento por su ID.
+         */
+        public static void DeleteMaintenance(int id)
+        {
+            using (var db = new DataContext())
+            {
+                var entity = db.Maintenances.Find(id);
+                if (entity != null)
+                {
+                    db.Maintenances.Remove(entity);
+                    db.SaveChanges();
+                }
+            }
+        }
     }
 }
-
-    

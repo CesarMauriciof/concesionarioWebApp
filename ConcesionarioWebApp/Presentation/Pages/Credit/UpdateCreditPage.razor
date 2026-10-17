@@ -1,11 +1,10 @@
-﻿@page "/credit/update/{id_credito:int}"
+@page "/credit/update/{Id:int}"
 @rendermode InteractiveServer
 @using Presentation.Credit
 
-<UpdateSaleComponent id_credito="id_credito" />
+<UpdateCreditComponent Id="Id" />
 
 @code {
     [Parameter]
     public int Id { get; set; }
-
 }
