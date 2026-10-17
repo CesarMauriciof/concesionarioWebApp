@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Gestión de Detalles de Ventas</h3>
 
@@ -42,6 +43,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(detail.id_detalle)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(detail.id_detalle)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -49,12 +53,50 @@
     </tbody>
 </table>
 
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
 @code {
+    private string? message;
     private List<SaleDetailEntity>? details;
 
     protected override async Task OnInitializedAsync()
     {
-        details = await Task.Run(() => SaleDetailLog.SaleDetailList());
+        await LoadDetails();
+    }
+
+    private async Task LoadDetails()
+    {
+        try
+        {
+            details = await Task.Run(() => SaleDetailLog.SaleDetailList());
+        }
+        catch (Exception ex)
+        {
+            details ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el detalle de venta #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            SaleDetailLog.DeleteSaleDetail(id);
+            message = "Registro eliminado correctamente.";
+            await LoadDetails();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el detalle de venta: {ex.InnerException?.Message ?? ex.Message}";
+        }
     }
 
     private void GoToUpdate(int id)

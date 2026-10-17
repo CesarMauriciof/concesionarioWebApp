@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Gestión de Empleados</h3>
 
@@ -48,6 +49,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(emp.IdEmpleado)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(emp.IdEmpleado)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -55,13 +59,50 @@
     </tbody>
 </table>
 
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
 @code {
+    private string? message;
     private List<EmployeeEntity>? employees;
 
     protected override async Task OnInitializedAsync()
     {
-        // Asegúrate de tener EmployeeList() en tu Logic
-        employees = await Task.Run(() => EmployeeLog.EmployeeList());
+        await LoadEmployees();
+    }
+
+    private async Task LoadEmployees()
+    {
+        try
+        {
+            employees = await Task.Run(() => EmployeeLog.EmployeeList());
+        }
+        catch (Exception ex)
+        {
+            employees ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el empleado #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            EmployeeLog.DeleteEmployee(id);
+            message = "Registro eliminado correctamente.";
+            await LoadEmployees();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el empleado: {ex.InnerException?.Message ?? ex.Message}";
+        }
     }
 
     private void GoToUpdate(int id)

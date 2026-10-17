@@ -73,7 +73,7 @@ else
         try
         {
             warranties = await Task.Run(() => WarrantyLog.WarrantyList());
-            objMaintenance = await Task.Run(() => MaintenanceLog.MaintenanceList().FirstOrDefault(m => m.id_mantenimiento == Id));
+            objMaintenance = await Task.Run(() => MaintenanceLog.GetMaintenanceById(Id));
 
             if (objMaintenance == null)
             {
@@ -99,12 +99,12 @@ else
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.Message}";
+            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 
     private void Cancel()
     {
-        NavManager.NavigateTo("ListMaintenancePage");
+        NavManager.NavigateTo("/maintenance/list");
     }
 }

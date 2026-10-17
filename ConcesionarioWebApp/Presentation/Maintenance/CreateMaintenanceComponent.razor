@@ -91,7 +91,7 @@
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el mantenimiento: {ex.Message}";
+            successMessage = $"Error al registrar el mantenimiento: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }

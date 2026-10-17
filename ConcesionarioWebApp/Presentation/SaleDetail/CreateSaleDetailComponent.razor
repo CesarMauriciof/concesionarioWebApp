@@ -42,7 +42,7 @@
         }
         catch (Exception ex)
         {
-            message = $"Error al guardar el detalle: {ex.Message}";
+            message = $"Error al guardar el detalle: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject IJSRuntime JS
 
 <h3>Gestión de Sedes</h3>
 
@@ -44,6 +45,9 @@
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(hq.IdSede)">
                         Editar
                     </button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(hq.IdSede)">
+                        Eliminar
+                    </button>
                 </td>
             </tr>
         }
@@ -51,13 +55,50 @@
     </tbody>
 </table>
 
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
 @code {
+    private string? message;
     private List<HeadquartersEntity>? headquartersList;
 
     protected override async Task OnInitializedAsync()
     {
-        // Asegúrate de tener HeadquartersList() en tu Logic
-        headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+        await LoadHeadquartersList();
+    }
+
+    private async Task LoadHeadquartersList()
+    {
+        try
+        {
+            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+        }
+        catch (Exception ex)
+        {
+            headquartersList ??= new();
+            message = $"Error al cargar los datos: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar la sede #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            HeadquartersLog.DeleteHeadquarters(id);
+            message = "Registro eliminado correctamente.";
+            await LoadHeadquartersList();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar la sede: {ex.InnerException?.Message ?? ex.Message}";
+        }
     }
 
     private void GoToUpdate(int id)

@@ -6,7 +6,10 @@
 
 @if (objCredit == null)
 {
-    <p>Cargando datos del crédito...</p>
+    @if (message == null)
+    {
+        <p>Cargando datos del crédito...</p>
+    }
 }
 else
 {
@@ -65,12 +68,19 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        pays = await Task.Run(() => PayLog.PayList());
-        objCredit = await Task.Run(() => CreditLog.CreditList().FirstOrDefault(c => c.id_credito == Id));
-
-        if (objCredit == null)
+        try
         {
-            message = "No se encontró el crédito especificado.";
+            pays = await Task.Run(() => PayLog.PayList());
+            objCredit = await Task.Run(() => CreditLog.GetCreditById(Id));
+
+            if (objCredit == null)
+            {
+                message = "No se encontró el crédito especificado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar el crédito: {ex.Message}";
         }
     }
 
@@ -87,7 +97,7 @@ else
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.Message}";
+            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 

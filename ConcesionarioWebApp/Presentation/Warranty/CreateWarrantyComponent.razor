@@ -72,7 +72,7 @@
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar la garantía: {ex.Message}";
+            successMessage = $"Error al registrar la garantía: {ex.InnerException?.Message ?? ex.Message}";
         }
     }
 }
