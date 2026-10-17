@@ -10,7 +10,7 @@ namespace Logic
          */
         public static void CreateSale(SaleEntity objSale)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Sales.Add(objSale);
                 db.SaveChanges();
@@ -22,7 +22,7 @@ namespace Logic
          */
         public static List<SaleEntity> SaleList()
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 return db.Sales.ToList();
             }
@@ -33,10 +33,37 @@ namespace Logic
          */
         public static void UpdateSale(SaleEntity objSale)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Sales.Update(objSale);
                 db.SaveChanges();
+            }
+        }
+
+        /*
+         * Método que busca una venta por su ID. Devuelve null si no existe.
+         */
+        public static SaleEntity? GetSaleById(int id)
+        {
+            using (var db = new DataContext())
+            {
+                return db.Sales.Find(id);
+            }
+        }
+
+        /*
+         * Método que elimina una venta por su ID.
+         */
+        public static void DeleteSale(int id)
+        {
+            using (var db = new DataContext())
+            {
+                var entity = db.Sales.Find(id);
+                if (entity != null)
+                {
+                    db.Sales.Remove(entity);
+                    db.SaveChanges();
+                }
             }
         }
     }

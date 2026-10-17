@@ -1,5 +1,4 @@
 using Data;
-using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace Logic
@@ -11,7 +10,7 @@ namespace Logic
          */
         public static void CreateSaleDetail(SaleDetailEntity objSaleDetail)
         {
-            using (var db = new DataContext(new DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.SaleDetails.Add(objSaleDetail);
                 db.SaveChanges();
@@ -23,7 +22,7 @@ namespace Logic
          */
         public static List<SaleDetailEntity> SaleDetailList()
         {
-            using (var db = new DataContext(new DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 return db.SaleDetails.ToList();
             }
@@ -34,10 +33,37 @@ namespace Logic
          */
         public static void UpdateSaleDetail(SaleDetailEntity objSaleDetail)
         {
-            using (var db = new DataContext(new DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.SaleDetails.Update(objSaleDetail);
                 db.SaveChanges();
+            }
+        }
+
+        /*
+         * Método que busca un detalle de venta por su ID. Devuelve null si no existe.
+         */
+        public static SaleDetailEntity? GetSaleDetailById(int id)
+        {
+            using (var db = new DataContext())
+            {
+                return db.SaleDetails.Find(id);
+            }
+        }
+
+        /*
+         * Método que elimina un detalle de venta por su ID.
+         */
+        public static void DeleteSaleDetail(int id)
+        {
+            using (var db = new DataContext())
+            {
+                var entity = db.SaleDetails.Find(id);
+                if (entity != null)
+                {
+                    db.SaleDetails.Remove(entity);
+                    db.SaveChanges();
+                }
             }
         }
     }

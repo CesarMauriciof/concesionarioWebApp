@@ -10,7 +10,7 @@ namespace Logic
          */
         public static void CreateWarranty(WarrantyEntity objWarranty)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Warranties.Add(objWarranty);
                 db.SaveChanges();
@@ -22,7 +22,7 @@ namespace Logic
          */
         public static List<WarrantyEntity> WarrantyList()
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 return db.Warranties.ToList();
             }
@@ -33,10 +33,37 @@ namespace Logic
          */
         public static void UpdateWarranty(WarrantyEntity objWarranty)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Warranties.Update(objWarranty);
                 db.SaveChanges();
+            }
+        }
+
+        /*
+         * Método que busca una garantía por su ID. Devuelve null si no existe.
+         */
+        public static WarrantyEntity? GetWarrantyById(int id)
+        {
+            using (var db = new DataContext())
+            {
+                return db.Warranties.Find(id);
+            }
+        }
+
+        /*
+         * Método que elimina una garantía por su ID.
+         */
+        public static void DeleteWarranty(int id)
+        {
+            using (var db = new DataContext())
+            {
+                var entity = db.Warranties.Find(id);
+                if (entity != null)
+                {
+                    db.Warranties.Remove(entity);
+                    db.SaveChanges();
+                }
             }
         }
     }

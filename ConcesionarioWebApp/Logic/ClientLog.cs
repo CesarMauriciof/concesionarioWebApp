@@ -10,7 +10,7 @@ namespace Logic
          */
         public static void CreateClient(ClientEntity objClient)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Clients.Add(objClient);
                 db.SaveChanges();
@@ -22,7 +22,7 @@ namespace Logic
          */
         public static List<ClientEntity> ClientList()
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 return db.Clients.ToList();
             }
@@ -33,10 +33,37 @@ namespace Logic
          */
         public static void UpdateClient(ClientEntity objClient)
         {
-            using (var db = new DataContext(new Microsoft.EntityFrameworkCore.DbContextOptions<DataContext>()))
+            using (var db = new DataContext())
             {
                 db.Clients.Update(objClient);
                 db.SaveChanges();
+            }
+        }
+
+        /*
+         * Método que busca un cliente por su ID. Devuelve null si no existe.
+         */
+        public static ClientEntity? GetClientById(int id)
+        {
+            using (var db = new DataContext())
+            {
+                return db.Clients.Find(id);
+            }
+        }
+
+        /*
+         * Método que elimina un cliente por su ID.
+         */
+        public static void DeleteClient(int id)
+        {
+            using (var db = new DataContext())
+            {
+                var entity = db.Clients.Find(id);
+                if (entity != null)
+                {
+                    db.Clients.Remove(entity);
+                    db.SaveChanges();
+                }
             }
         }
     }
