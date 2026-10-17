@@ -13,6 +13,7 @@ public class PayEntity
 
     // Llave foránea a Venta
     [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una venta.")]
     public int id_venta { get; set; }
     
     // Relación Muchos a Uno: Un Pago pertenece a una Venta
@@ -20,7 +21,7 @@ public class PayEntity
     public virtual SaleEntity? Venta { get; set; }
     
     [Required]
-    [Column(TypeName = "decimal(10,2)")]
+    [Column(TypeName = "decimal(12,2)")]
     public decimal monto { get; set; }
 
     [Required]

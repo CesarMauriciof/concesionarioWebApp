@@ -6,6 +6,12 @@ namespace Data
 {
     public class DataContext : DbContext
     {
+        // Constructor usado por la capa Logic: la conexión se configura en OnConfiguring
+        public DataContext()
+        {
+        }
+
+        // Constructor usado en tiempo de diseño (DataContextFactory / migraciones)
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -32,6 +38,20 @@ namespace Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // venta.id_cliente es la FK de la relación Cliente -> Ventas (evita una columna sombra inexistente)
+            modelBuilder.Entity<ClientEntity>()
+                .HasMany(c => c.venta)
+                .WithOne()
+                .HasForeignKey(s => s.id_cliente);
+
+            // Estas FK admiten NULL en MySQL (ON DELETE SET NULL / datos existentes). [Required] se mantiene
+            // en el modelo solo para validar formularios; aquí se le indica a EF que la columna es opcional.
+            modelBuilder.Entity<EmployeeEntity>().Property(e => e.IdSede).IsRequired(false);
+            modelBuilder.Entity<VehicleEntity>().Property(v => v.IdSede).IsRequired(false);
+            modelBuilder.Entity<SaleEntity>().Property(s => s.id_cliente).IsRequired(false);
+            modelBuilder.Entity<SaleEntity>().Property(s => s.id_empleado).IsRequired(false);
+
             modelBuilder.Entity<ClientEntity>().HasData(
                 new ClientEntity
                 {

@@ -29,9 +29,11 @@ namespace Model
         [Column("salario", TypeName = "decimal(10,2)")]
         public decimal Salario { get; set; }
 
-        [Required]
+        // Nullable porque en la BD la FK tiene ON DELETE SET NULL
+        [Required(ErrorMessage = "Debe seleccionar una sede.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una sede.")]
         [Column("id_sede")]
-        public int IdSede { get; set; }
+        public int? IdSede { get; set; }
 
         // Propiedad de navegación: Un empleado pertenece a una sede
         [ForeignKey(nameof(IdSede))]

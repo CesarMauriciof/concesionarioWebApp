@@ -23,6 +23,7 @@ public class MaintenanceEntity
     public int kilometraje { get; set; }
 
     [Required]
+    [Column("año_mantenimiento")]
     public int año_mantenimiento { get; set; }
 
     [Required]
