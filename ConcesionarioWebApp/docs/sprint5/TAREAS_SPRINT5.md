@@ -58,17 +58,17 @@ Cada archivo tiene **un solo responsable**: así no hay conflictos al hacer merg
 
 ## 3. Tareas para Jira
 
-> Creen cada tarea en Jira, asígnenla y usen el botón **"Create branch"** de Jira con base **`develop`**
-> (después de mergear la rama de estructura). Así la rama queda con el código `SCRUM-XX` y se enlaza sola.
+> Adriana crea las tareas en Jira y **las ramas de cada uno** (desde `develop`, después de mergear la
+> estructura). Cada integrante solo hace `git fetch origin` y `git checkout <su-rama>`.
 
 ### T1 – Crear tareas en Jira y estructura base del módulo OAuth · **Adriana**
-- Crear en Jira las tareas T1–T7 de este documento y asignarlas.
+- Crear en Jira las tareas T1–T7 de este documento, asignarlas y crear la rama de cada una.
 - Estructura base del módulo (rama `feature-estructura-autenticacion-oauth`) → **hecha**; mergear a `develop`.
 - Revisar y aprobar los pull requests de todos en el orden de la sección 4.
 - **Criterio de aceptación:** tareas creadas y asignadas en Jira; estructura en `develop` compilando.
 
 ### T2 – Configurar el proveedor OAuth 2.0 (Google) · **Mauricio**
-Rama sugerida: `SCRUM-XX-configurar-proveedor-oauth-google`
+Rama: `feature-configurar-proveedor-oauth`
 1. Entrar a <https://console.cloud.google.com/> con una cuenta de Google y crear el proyecto
    **"Concesionario WebApp"**.
 2. **APIs y servicios → Pantalla de consentimiento OAuth**: tipo *Externo*, nombre de la app, correo de
@@ -87,7 +87,7 @@ Rama sugerida: `SCRUM-XX-configurar-proveedor-oauth-google`
   de configuración.
 
 ### T3 – Persistencia y validación de usuarios en la capa Data · **Keiner**
-Rama sugerida: `SCRUM-XX-persistencia-login-externo`
+Rama: `feature-persistencia-usuarios-data`
 1. `Model/UserEntity.cs`: agregar `UltimoAcceso` (`ultimo_acceso`, datetime, opcional) y la colección `LoginsExternos`.
 2. `Data/DataContext.cs`: registrar `ExternalLoginEntity` (DbSet + configuración del TODO: índice único
    `(proveedor, clave_proveedor)`, FK a usuario con cascada, nombres de índices/FK con la convención del proyecto).
@@ -103,7 +103,7 @@ Rama sugerida: `SCRUM-XX-persistencia-login-externo`
   no se puede insertar dos veces la misma cuenta de Google; al borrar un usuario se borran sus vínculos.
 
 ### T4 – Proceso de autenticación en la capa Logic · **Yeison**
-Rama sugerida: `SCRUM-XX-proceso-autenticacion-logic` · **Depende de T3** (puede empezar con el contrato).
+Rama: `feature-proceso-autenticacion-logic` · **Depende de T3** (puede empezar con el contrato).
 1. `Logic/Auth/AuthLog.cs`: implementar `LoginWithExternalProviderAsync` y `LoginWithPasswordAsync`
    siguiendo las 5 reglas escritas en el archivo.
 2. `Presentation/Auth/UserClaims.cs`: crear el `ClaimsPrincipal` (Id, Name, Email, Role).
@@ -114,7 +114,7 @@ Rama sugerida: `SCRUM-XX-proceso-autenticacion-logic` · **Depende de T3** (pued
   el vínculo aunque el correo haya cambiado.
 
 ### T5 – Formulario de inicio de sesión en la capa Presentation · **Camilo**
-Rama sugerida: `SCRUM-XX-formulario-inicio-sesion`
+Rama: `feature-formulario-inicio-sesion`
 1. `Pages/Auth/Login.razor`: botón *"Iniciar sesión con Google"*, formulario usuario/contraseña
    (`POST /auth/login-local`, campos `usuario`, `contrasena`, `returnUrl` y `<AntiforgeryToken />`),
    mensajes de error y de sesión cerrada.
@@ -124,7 +124,7 @@ Rama sugerida: `SCRUM-XX-formulario-inicio-sesion`
   después de iniciar sesión se vuelve a la página que se intentaba abrir.
 
 ### T6 – Cierre de sesión (Logout) · **Mauricio**
-Rama sugerida: `SCRUM-XX-cierre-de-sesion`
+Rama: `feature-cierre-de-sesion`
 1. `Presentation/Auth/LogoutEndpoint.cs`: `SignOutAsync` y redirección a `/login?logout=1`.
 2. `Layout/LoginDisplay.razor`: nombre y rol del usuario + botón *Cerrar sesión* (formulario **POST** con
    `<AntiforgeryToken />`, no un enlace).
@@ -132,7 +132,7 @@ Rama sugerida: `SCRUM-XX-cierre-de-sesion`
   no se puede volver a ver información protegida.
 
 ### T7 – Autorización por roles · **Adriana**
-Rama sugerida: `SCRUM-XX-autorizacion-por-roles` · **Va de último** (depende de T4 y T5).
+Rama: `feature-autorizacion-por-roles` · **Va de último** (depende de T4 y T5).
 1. `Routes.razor`: `AuthorizeRouteView` + `<RedirectToLogin />`.
 2. `_Imports.razor`: `@attribute [Authorize]` (todo exige sesión salvo Login y AccessDenied).
 3. `Pages/User/*`: `[Authorize(Roles = "Administrador")]`.
