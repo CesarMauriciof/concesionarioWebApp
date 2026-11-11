@@ -1,6 +1,23 @@
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+        @* Exige sesión en todas las páginas (salvo las que tienen [AllowAnonymous]) *@
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated != true)
+                {
+                    @* Sin sesión: al formulario de login, recordando la página pedida *@
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    @* Con sesión pero sin el rol necesario *@
+                    <p role="alert" class="alert alert-danger">No tiene permisos para ver esta página.</p>
+                }
+            </NotAuthorized>
+            <Authorizing>
+                <p class="text-body-secondary">Verificando permisos...</p>
+            </Authorizing>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
     </Found>
     <NotFound>
