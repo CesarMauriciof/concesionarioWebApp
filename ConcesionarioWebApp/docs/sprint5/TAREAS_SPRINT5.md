@@ -52,7 +52,6 @@ Reglas clave:
 | `Data/DataContext.cs`, `Model/UserEntity.cs` | 🔴 TODO marcado | Keiner (T3) |
 | `Data/Scripts/03_crear_administrador_inicial.sql` | 🔴 Plantilla | Keiner (T3) |
 | `Presentation/Routes.razor`, `_Imports.razor`, `NavMenu.razor`, `Pages/User/*` | 🔴 TODO marcado | Adriana (T7) |
-| `docs/sprint5/DOCUMENTO_TECNICO_OAUTH.md` | 🔴 Plantilla | Keiner consolida (T8), todos aportan |
 
 Busquen en Rider **`TODO [T`** (Ctrl+Shift+F) para ver exactamente qué le toca a cada uno.
 Cada archivo tiene **un solo responsable**: así no hay conflictos al hacer merge.
@@ -63,7 +62,7 @@ Cada archivo tiene **un solo responsable**: así no hay conflictos al hacer merg
 > (después de mergear la rama de estructura). Así la rama queda con el código `SCRUM-XX` y se enlaza sola.
 
 ### T1 – Crear tareas en Jira y estructura base del módulo OAuth · **Adriana**
-- Crear en Jira las tareas T1–T8 de este documento y asignarlas.
+- Crear en Jira las tareas T1–T7 de este documento y asignarlas.
 - Estructura base del módulo (rama `feature-estructura-autenticacion-oauth`) → **hecha**; mergear a `develop`.
 - Revisar y aprobar los pull requests de todos en el orden de la sección 4.
 - **Criterio de aceptación:** tareas creadas y asignadas en Jira; estructura en `develop` compilando.
@@ -85,7 +84,7 @@ Rama sugerida: `SCRUM-XX-configurar-proveedor-oauth-google`
    ```
 5. Completar el TODO de `Presentation/Auth/AuthenticationSetup.cs` (`AddGoogle` con `SignInScheme = ExternalScheme`).
 - **Criterio de aceptación:** con los secretos configurados la app arranca; sin ellos, muestra un error claro
-  de configuración. Capturas de la consola de Google para el documento técnico (sin mostrar el secreto).
+  de configuración.
 
 ### T3 – Persistencia y validación de usuarios en la capa Data · **Keiner**
 Rama sugerida: `SCRUM-XX-persistencia-login-externo`
@@ -141,17 +140,12 @@ Rama sugerida: `SCRUM-XX-autorizacion-por-roles` · **Va de último** (depende d
 - **Criterio de aceptación:** sin sesión cualquier URL lleva al login; un Vendedor que abre `/user/list`
   ve *Acceso denegado*; el Administrador ve todo.
 
-### T8 – Documento técnico del módulo OAuth · **Keiner** (consolida) — **todos aportan**
-- Completar `docs/sprint5/DOCUMENTO_TECNICO_OAUTH.md`; cada integrante escribe la sección de su tarea.
-- Anexarlo al documento técnico del proyecto.
-- **Criterio de aceptación:** todas las secciones completas, con capturas, sin secretos visibles.
-
 ## 4. Orden de merge a `develop`
 
 ```
 T1 estructura ──▶ T3 Data (Keiner) ──▶ T2 Google (Mauricio) ──▶ T4 Logic+endpoints (Yeison)
                                                              ──▶ T5 Login (Camilo) ──▶ T6 Logout (Mauricio)
-                                                                                    ──▶ T7 Roles (Adriana) ──▶ T8 Documento
+                                                                                    ──▶ T7 Roles (Adriana)
 ```
 
 - Todos pueden **empezar en paralelo** desde la estructura: los contratos (`AuthenticatedUser`,
