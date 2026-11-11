@@ -58,14 +58,16 @@ Cada archivo tiene **un solo responsable**: así no hay conflictos al hacer merg
 
 ## 3. Tareas para Jira
 
-> Adriana crea las tareas en Jira y **las ramas de cada uno** (desde `develop`, después de mergear la
-> estructura). Cada integrante solo hace `git fetch origin` y `git checkout <su-rama>`.
+> Mauricio (T1) crea las tareas en Jira y **las ramas de cada uno** (desde `develop`, después de que
+> Adriana mergee la estructura). Cada integrante solo hace `git fetch origin` y `git checkout <su-rama>`.
 
-### T1 – Crear tareas en Jira y estructura base del módulo OAuth · **Adriana**
-- Crear en Jira las tareas T1–T7 de este documento, asignarlas y crear la rama de cada una.
-- Estructura base del módulo (rama `feature-estructura-autenticacion-oauth`) → **hecha**; mergear a `develop`.
-- Revisar y aprobar los pull requests de todos en el orden de la sección 4.
-- **Criterio de aceptación:** tareas creadas y asignadas en Jira; estructura en `develop` compilando.
+### T1 – Crear las tareas en Jira y las ramas feature · **Mauricio**
+- Crear en Jira las tareas T1–T7 de este documento y asignarlas.
+- Crear las ramas `feature-...` de cada tarea desde `develop` (después de mergear la estructura).
+- **Criterio de aceptación:** tareas creadas y asignadas en Jira; las 6 ramas existen en Bitbucket.
+
+> La estructura base del módulo (rama `feature-estructura-autenticacion-oauth`) la hizo Adriana,
+> que además revisa y aprueba los pull requests en el orden de la sección 4.
 
 ### T2 – Configurar el proveedor OAuth 2.0 (Google) · **Mauricio**
 Rama: `feature-configurar-proveedor-oauth`
