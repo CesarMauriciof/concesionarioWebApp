@@ -1,6 +1,7 @@
 using System.Globalization;
 using Logic;
 using Presentation;
+using Presentation.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
 }
 
 builder.Services.AddConcesionarioLogic(connectionString);
+
+// Sprint 5: autenticación con cookie + OAuth 2.0 (ver Presentation/Auth/AuthenticationSetup.cs)
+builder.AddConcesionarioAuthentication();
 
 // Blazor Server: los componentes se ejecutan en el servidor, por eso pueden usar la capa Logic directamente
 builder.Services.AddRazorComponents()
@@ -34,10 +38,15 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// Endpoints de login, callback de OAuth y logout (ver Presentation/Auth/AuthEndpoints.cs)
+app.MapAuthEndpoints();
 
 app.Run();

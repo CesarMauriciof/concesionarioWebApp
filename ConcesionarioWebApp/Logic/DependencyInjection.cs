@@ -1,4 +1,5 @@
 using Data;
+using Logic.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,9 @@ public static class DependencyInjection
                 mySql => mySql.EnableRetryOnFailure(maxRetryCount: 3)));
 
         services.AddSingleton<IPasswordHasher<UserEntity>, PasswordHasher<UserEntity>>();
+
+        // Sprint 5 - autenticación (T4)
+        services.AddScoped<AuthLog>();
 
         services.AddScoped<ClientLog>();
         services.AddScoped<CreditLog>();

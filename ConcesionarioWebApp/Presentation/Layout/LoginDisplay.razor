@@ -1,0 +1,26 @@
+@*
+    Muestra en la barra superior quién inició sesión y el botón "Cerrar sesión".
+    Ya está incluido en MainLayout.razor.
+    RESPONSABLE: Mauricio - Tarea T6 (ver docs/sprint5/TAREAS_SPRINT5.md).
+
+    TODO [T6 - Mauricio]:
+      Dentro de <AuthorizeView>:
+        <Authorized>
+          - Nombre del usuario: context.User.Identity?.Name
+          - Rol: context.User.FindFirst(ClaimTypes.Role)?.Value  (badge de Bootstrap)
+          - Formulario de cierre de sesión (DEBE ser POST, no un enlace):
+              <form method="post" action="auth/logout">
+                  <AntiforgeryToken />
+                  <button type="submit" class="btn btn-link">Cerrar sesión</button>
+              </form>
+        </Authorized>
+        <NotAuthorized>
+          - Enlace "Iniciar sesión" a /login
+        </NotAuthorized>
+*@
+
+<AuthorizeView>
+    <Authorized>
+        <span class="text-body-secondary">@context.User.Identity?.Name</span>
+    </Authorized>
+</AuthorizeView>

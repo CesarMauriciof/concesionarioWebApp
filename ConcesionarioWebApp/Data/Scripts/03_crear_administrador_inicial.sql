@@ -1,0 +1,22 @@
+-- =====================================================================================================
+-- 03 - Crea el primer usuario Administrador para poder entrar al sistema con Google.
+--
+-- RESPONSABLE: Keiner - Tarea T3 (ver docs/sprint5/TAREAS_SPRINT5.md).
+--
+-- ¿Por qué hace falta? Con la autenticación activa, nadie entra sin estar registrado en la tabla
+-- usuario, y para registrar usuarios hay que ser Administrador. Este script rompe ese círculo.
+--
+-- TODO [T3 - Keiner]:
+--   1. INSERT en usuario con: nombre_usuario, correo (el correo de Google con que entrará el admin),
+--      rol = 'Administrador', activo = 1.
+--   2. contrasena_hash: la columna es obligatoria. Como este usuario entrará con Google, se puede
+--      guardar un valor que NUNCA coincida con un hash válido (p. ej. '!SIN_CONTRASENA_LOCAL!'),
+--      así el login con contraseña siempre falla para él. Documentar esta decisión.
+--   3. Hacerlo idempotente (que no falle si se ejecuta dos veces): INSERT ... SELECT ... WHERE NOT EXISTS.
+--   4. Dejar el correo como variable al inicio del script para que cada compañero ponga el suyo:
+--        SET @correo_admin = 'su.correo@gmail.com';
+-- =====================================================================================================
+USE concesionario;
+
+-- SET @correo_admin = 'su.correo@gmail.com';
+-- INSERT INTO usuario (...) SELECT ... WHERE NOT EXISTS (...);

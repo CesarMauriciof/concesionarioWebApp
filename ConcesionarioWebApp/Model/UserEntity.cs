@@ -41,6 +41,11 @@ public class UserEntity
     [Column("fecha_creacion", TypeName = "datetime")]
     public DateTime FechaCreacion { get; set; }
 
+    // TODO [T3 - Keiner]: agregar
+    //   [Column("ultimo_acceso", TypeName = "datetime")] public DateTime? UltimoAcceso { get; set; }
+    //   public virtual ICollection<ExternalLoginEntity> LoginsExternos { get; set; } = new List<ExternalLoginEntity>();
+    // y crear la migración "AgregarLoginExterno" (no agregar la propiedad sin la migración: la app fallaría).
+
     // Opcional: vincula el usuario con un empleado del concesionario
     [Column("id_empleado")]
     public int? IdEmpleado { get; set; }

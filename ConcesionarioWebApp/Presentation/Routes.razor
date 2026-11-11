@@ -1,3 +1,13 @@
+@*
+    TODO [T7 - Adriana] Autorización (ver docs/sprint5/TAREAS_SPRINT5.md):
+      1. Cambiar <RouteView> por:
+           <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+               <NotAuthorized><RedirectToLogin /></NotAuthorized>
+           </AuthorizeRouteView>
+      2. Agregar @attribute [Authorize] en _Imports.razor para que TODAS las páginas exijan sesión
+         (Login y AccessDenied ya tienen [AllowAnonymous]).
+      3. Páginas de Usuarios (Pages/User/*): @attribute [Authorize(Roles = "Administrador")]
+*@
 <Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>

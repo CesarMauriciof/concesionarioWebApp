@@ -23,9 +23,19 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<QuoteEntity> Quotes => Set<QuoteEntity>();
     public DbSet<TestDriveEntity> TestDrives => Set<TestDriveEntity>();
 
+    // TODO [T3 - Keiner]: public DbSet<ExternalLoginEntity> ExternalLogins => Set<ExternalLoginEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // TODO [T3 - Keiner] Sprint 5 (ver docs/sprint5/TAREAS_SPRINT5.md):
+        //   modelBuilder.Entity<ExternalLoginEntity>(e => { ... }) con:
+        //     - índice ÚNICO (Proveedor, ClaveProveedor) "uq_usuario_login_externo_proveedor_clave"
+        //     - índice "ix_usuario_login_externo_id_usuario"
+        //     - FK a usuario "fk_usuario_login_externo_usuario" con OnDelete Cascade
+        //     - FechaVinculacion con HasDefaultValueSql("CURRENT_TIMESTAMP")
+        //   y en UserEntity la columna ultimo_acceso (DateTime?, opcional).
 
         modelBuilder.HasCharSet("utf8mb4").UseCollation("utf8mb4_0900_ai_ci");
 

@@ -1,0 +1,56 @@
+@page "/login"
+@layout LoginLayout
+@attribute [AllowAnonymous]
+
+@*
+    Formulario de inicio de sesión.
+    RESPONSABLE: Camilo - Tarea T5 (ver docs/sprint5/TAREAS_SPRINT5.md).
+
+    IMPORTANTE: este formulario NO inicia sesión con código C# del componente (la app es
+    InteractiveServer y desde ahí no se pueden escribir cookies). Solo envía al usuario a los
+    endpoints HTTP de Presentation/Auth/AuthEndpoints.cs (T4 - Yeison):
+      - Botón Google:  <a href="/auth/login/google?returnUrl=..." > (enlace normal, GET)
+      - Formulario local: <form method="post" action="/auth/login-local"> con los campos
+          name="usuario", name="contrasena", name="returnUrl" (hidden) y <AntiforgeryToken />
+        Los nombres de los campos DEBEN ser exactamente esos (los lee el endpoint).
+
+    TODO [T5 - Camilo]:
+      1. Botón "Iniciar sesión con Google" (con el logo de Google).
+      2. Separador "o" y formulario de usuario/contraseña (respaldo para el administrador).
+      3. Mostrar el mensaje de Error (viene en la URL, ver parámetro abajo) en un alert-danger.
+      4. Si Logout == "1" mostrar alert-success "Sesión cerrada correctamente." (T6).
+      5. Si el usuario YA inició sesión, redirigir a "/" (usar <AuthorizeView> o AuthenticationState).
+      6. Pasar ReturnUrl al botón de Google y al campo hidden del formulario.
+*@
+
+<PageTitle>Iniciar sesión</PageTitle>
+
+<h1 class="h3 mb-3 text-center">Concesionario WebApp</h1>
+
+@if (!string.IsNullOrEmpty(Error))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<div class="alert alert-info">
+    Página de inicio de sesión en construcción (Sprint 5 - T5).
+</div>
+
+@code {
+    /// <summary>Mensaje de error que envían los endpoints: /login?error=...</summary>
+    [SupplyParameterFromQuery]
+    public string? Error { get; set; }
+
+    /// <summary>Página a la que se vuelve después de iniciar sesión: /login?returnUrl=/sale/list</summary>
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    /// <summary>"1" cuando se viene de cerrar sesión: /login?logout=1</summary>
+    [SupplyParameterFromQuery]
+    public string? Logout { get; set; }
+
+    // Los endpoints mandan "pendiente" mientras no estén implementados; el resto llega como texto.
+    private string ErrorMessage => Error == "pendiente"
+        ? "El inicio de sesión todavía no está implementado (Sprint 5)."
+        : Error!;
+}
