@@ -26,7 +26,7 @@ public class EmployeeEntity
     [Column("cargo")]
     public string Cargo { get; set; } = string.Empty;
 
-    [Range(typeof(decimal), "0", "99999999.99", ErrorMessage = "El salario no puede ser negativo.")]
+    [Range(typeof(decimal), "0", "99999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "El salario no puede ser negativo.")]
     [Column("salario", TypeName = "decimal(10,2)")]
     public decimal Salario { get; set; }
 

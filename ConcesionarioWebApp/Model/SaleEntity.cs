@@ -14,7 +14,7 @@ public class SaleEntity
     [Column("fecha", TypeName = "date")]
     public DateTime Fecha { get; set; }
 
-    [Range(typeof(decimal), "0", "9999999999.99", ErrorMessage = "El total pagado no puede ser negativo.")]
+    [Range(typeof(decimal), "0", "9999999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "El total pagado no puede ser negativo.")]
     [Column("total_pagado", TypeName = "decimal(12,2)")]
     public decimal TotalPagado { get; set; }
 

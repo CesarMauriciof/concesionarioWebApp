@@ -24,7 +24,7 @@ public class CreditEntity
     [Column("entidad_bancaria")]
     public string EntidadBancaria { get; set; } = string.Empty;
 
-    [Range(typeof(decimal), "0.01", "9999999999.99", ErrorMessage = "El monto aprobado debe ser mayor que cero.")]
+    [Range(typeof(decimal), "0.01", "9999999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "El monto aprobado debe ser mayor que cero.")]
     [Column("monto_aprobado", TypeName = "decimal(12,2)")]
     public decimal MontoAprobado { get; set; }
 

@@ -19,7 +19,7 @@ public class PayEntity
     [ForeignKey(nameof(IdVenta))]
     public virtual SaleEntity? Venta { get; set; }
 
-    [Range(typeof(decimal), "0.01", "9999999999.99", ErrorMessage = "El monto debe ser mayor que cero.")]
+    [Range(typeof(decimal), "0.01", "9999999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "El monto debe ser mayor que cero.")]
     [Column("monto", TypeName = "decimal(12,2)")]
     public decimal Monto { get; set; }
 
