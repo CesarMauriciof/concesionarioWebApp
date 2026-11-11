@@ -6,7 +6,10 @@
 
     <main>
         <div class="top-row px-4 justify-content-between">
-            <span class="text-body-secondary">Concesionario WebApp</span>
+            <div class="topbar-title">
+                <span class="topbar-app">Concesionario WebApp</span>
+                <span class="topbar-date d-none d-md-inline">@Today</span>
+            </div>
             @* Usuario conectado y botón de cerrar sesión (T6 - Mauricio) *@
             <LoginDisplay />
         </div>
@@ -16,3 +19,15 @@
         </article>
     </main>
 </div>
+
+@code {
+    // Fecha actual en español (la cultura es-CO se configura en Program.cs)
+    private static string Today
+    {
+        get
+        {
+            var text = DateTime.Now.ToString("dddd, d 'de' MMMM 'de' yyyy");
+            return char.ToUpper(text[0]) + text[1..];
+        }
+    }
+}

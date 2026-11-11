@@ -1,10 +1,16 @@
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Concesionario</a>
-        <button title="Menú de navegación" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+<div class="brand-row">
+    <a class="brand" href="">
+        <span class="brand-logo" aria-hidden="true">
+            <span class="bi bi-car-front-fill-nav-menu"></span>
+        </span>
+        <span class="brand-text">
+            <span class="brand-name">Concesionario</span>
+            <span class="brand-sub">Panel administrativo</span>
+        </span>
+    </a>
+    <button title="Menú de navegación" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
@@ -15,13 +21,17 @@
             </NavLink>
         </div>
 
-        @foreach (var item in menuItems)
+        @foreach (var group in menuSections)
         {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@item.Href">
-                    <span class="bi @item.Icon" aria-hidden="true"></span> @item.Text
-                </NavLink>
-            </div>
+            <div class="nav-section">@group.Title</div>
+            @foreach (var item in group.Items)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@item.Href">
+                        <span class="bi @item.Icon" aria-hidden="true"></span> @item.Text
+                    </NavLink>
+                </div>
+            }
         }
 
         @* Gestión de usuarios: solo para el rol Administrador *@
@@ -41,20 +51,36 @@
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     // Las rutas siguen la convención /<modulo>/list | create | update/{id}
-    private readonly (string Href, string Icon, string Text)[] menuItems =
+    // Agrupadas por área, como en los paneles administrativos de concesionarios
+    private readonly (string Title, (string Href, string Icon, string Text)[] Items)[] menuSections =
     [
-        ("client/list", "bi-person-fill-nav-menu", "Clientes"),
-        ("vehicle/list", "bi-car-front-fill-nav-menu", "Vehículos"),
-        ("quote/list", "bi-file-earmark-text-nav-menu", "Cotizaciones"),
-        ("testdrive/list", "bi-calendar-check-nav-menu", "Pruebas de manejo"),
-        ("sale/list", "bi-receipt-nav-menu", "Ventas"),
-        ("saledetail/list", "bi-card-list-nav-menu", "Detalle Venta"),
-        ("pay/list", "bi-cash-coin-nav-menu", "Pagos"),
-        ("credit/list", "bi-credit-card-nav-menu", "Créditos"),
-        ("warranty/list", "bi-shield-check-nav-menu", "Garantías"),
-        ("maintenance/list", "bi-tools-nav-menu", "Mantenimientos"),
-        ("employee/list", "bi-people-fill-nav-menu", "Empleados"),
-        ("headquarters/list", "bi-building-nav-menu", "Sedes"),
+        ("Comercial",
+        [
+            ("client/list", "bi-person-fill-nav-menu", "Clientes"),
+            ("quote/list", "bi-file-earmark-text-nav-menu", "Cotizaciones"),
+            ("testdrive/list", "bi-calendar-check-nav-menu", "Pruebas de manejo"),
+            ("sale/list", "bi-receipt-nav-menu", "Ventas"),
+            ("saledetail/list", "bi-card-list-nav-menu", "Detalle Venta"),
+        ]),
+        ("Inventario",
+        [
+            ("vehicle/list", "bi-car-front-fill-nav-menu", "Vehículos"),
+            ("headquarters/list", "bi-building-nav-menu", "Sedes"),
+        ]),
+        ("Finanzas",
+        [
+            ("pay/list", "bi-cash-coin-nav-menu", "Pagos"),
+            ("credit/list", "bi-credit-card-nav-menu", "Créditos"),
+        ]),
+        ("Posventa",
+        [
+            ("warranty/list", "bi-shield-check-nav-menu", "Garantías"),
+            ("maintenance/list", "bi-tools-nav-menu", "Mantenimientos"),
+        ]),
+        ("Administración",
+        [
+            ("employee/list", "bi-people-fill-nav-menu", "Empleados"),
+        ]),
     ];
 
     private void ToggleNavMenu()

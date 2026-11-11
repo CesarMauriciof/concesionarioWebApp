@@ -7,14 +7,17 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="d-flex align-items-center gap-2">
-            <span class="text-body-secondary small d-none d-sm-inline">@context.User.Identity?.Name</span>
-            <span class="badge text-bg-secondary">@context.User.FindFirst(ClaimTypes.Role)?.Value</span>
+        <div class="user-box">
+            <span class="user-avatar" aria-hidden="true">@Initials(context.User.Identity?.Name)</span>
+            <span class="user-info d-none d-sm-flex">
+                <span class="user-name">@context.User.Identity?.Name</span>
+                <span class="user-role">@context.User.FindFirst(ClaimTypes.Role)?.Value</span>
+            </span>
 
             @* Cerrar sesión SIEMPRE por POST con token antiforgery (no con un enlace) *@
             <form method="post" action="auth/logout" class="m-0">
                 <AntiforgeryToken />
-                <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar sesión</button>
+                <button type="submit" class="btn btn-sm btn-logout">Cerrar sesión</button>
             </form>
         </div>
     </Authorized>
@@ -22,3 +25,17 @@
         <a href="login" class="btn btn-sm btn-primary">Iniciar sesión</a>
     </NotAuthorized>
 </AuthorizeView>
+
+@code {
+    // Iniciales para el avatar: "adriana" → "A", "Juan Pérez" → "JP"
+    private static string Initials(string? name)
+    {
+        var parts = (name ?? "?").Split([' ', '.', '_', '-'], StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length switch
+        {
+            0 => "?",
+            1 => parts[0][..1].ToUpper(),
+            _ => (parts[0][..1] + parts[1][..1]).ToUpper()
+        };
+    }
+}
