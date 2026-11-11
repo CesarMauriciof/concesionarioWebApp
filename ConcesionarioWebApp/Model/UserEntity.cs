@@ -41,6 +41,13 @@ public class UserEntity
     [Column("fecha_creacion", TypeName = "datetime")]
     public DateTime FechaCreacion { get; set; }
 
+    // Fecha y hora del último inicio de sesión exitoso (null si nunca ha entrado)
+    [Column("ultimo_acceso", TypeName = "datetime")]
+    public DateTime? UltimoAcceso { get; set; }
+
+    // Cuentas externas (Google...) vinculadas a este usuario
+    public virtual ICollection<ExternalLoginEntity> LoginsExternos { get; set; } = new List<ExternalLoginEntity>();
+
     // Opcional: vincula el usuario con un empleado del concesionario
     [Column("id_empleado")]
     public int? IdEmpleado { get; set; }
