@@ -29,8 +29,10 @@ public static class DependencyInjection
         services.AddScoped<HeadquartersLog>();
         services.AddScoped<MaintenanceLog>();
         services.AddScoped<PayLog>();
+        services.AddScoped<QuoteLog>();
         services.AddScoped<SaleDetailLog>();
         services.AddScoped<SaleLog>();
+        services.AddScoped<TestDriveLog>();
         services.AddScoped<UserLog>();
         services.AddScoped<VehicleLog>();
         services.AddScoped<WarrantyLog>();

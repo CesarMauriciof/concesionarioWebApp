@@ -1,0 +1,128 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject QuoteLog QuoteLog
+
+<h3>Cotizaciones</h3>
+
+<div class="mb-3">
+    <a href="/quote/create" class="btn btn-primary">Nueva Cotización</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Válida hasta</th>
+        <th>Cliente</th>
+        <th>Vehículo</th>
+        <th>Precio ofrecido</th>
+        <th>Asesor</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (quotes == null)
+    {
+        <tr>
+            <td colspan="9">Cargando cotizaciones...</td>
+        </tr>
+    }
+    else if (!quotes.Any())
+    {
+        <tr>
+            <td colspan="9">No hay cotizaciones registradas.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var quote in quotes)
+        {
+            var status = EffectiveStatus(quote);
+            <tr>
+                <td>@quote.IdCotizacion</td>
+                <td>@quote.Fecha.ToString("dd/MM/yyyy")</td>
+                <td>@quote.FechaVencimiento.ToString("dd/MM/yyyy")</td>
+                <td>@quote.Cliente?.Nombre</td>
+                <td>@quote.Vehiculo?.Marca @quote.Vehiculo?.Modelo</td>
+                <td>@quote.PrecioOfrecido.ToString("C")</td>
+                <td>@(quote.Empleado?.Nombre ?? "—")</td>
+                <td><span class="badge @BadgeClass(status)">@status</span></td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(quote.IdCotizacion)">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(quote.IdCotizacion)">Eliminar</button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private List<QuoteEntity>? quotes;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadQuotes();
+    }
+
+    private async Task LoadQuotes()
+    {
+        try
+        {
+            quotes = await QuoteLog.QuoteListAsync();
+        }
+        catch (Exception ex)
+        {
+            quotes ??= new();
+            message = $"Error al cargar las cotizaciones: {ex.Message}";
+        }
+    }
+
+    // Una cotización pendiente cuya fecha de vigencia ya pasó se muestra como vencida
+    private static QuoteStatus EffectiveStatus(QuoteEntity quote) =>
+        quote.Estado == QuoteStatus.Pendiente && quote.FechaVencimiento.Date < DateTime.Today
+            ? QuoteStatus.Vencida
+            : quote.Estado;
+
+    private static string BadgeClass(QuoteStatus status) => status switch
+    {
+        QuoteStatus.Aceptada => "bg-success",
+        QuoteStatus.Rechazada => "bg-danger",
+        QuoteStatus.Vencida => "bg-secondary",
+        _ => "bg-warning text-dark"
+    };
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar la cotización #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            await QuoteLog.DeleteQuoteAsync(id);
+            message = "Cotización eliminada correctamente.";
+            await LoadQuotes();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar la cotización: {ex.Message}";
+        }
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/quote/update/{id}");
+    }
+}

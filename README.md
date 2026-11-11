@@ -41,6 +41,8 @@ El sistema está modelado a partir de las siguientes entidades principales:
 9. **`garantia`**: Garantías asociadas a un detalle de venta (`id_garantia`, `id_detalle`, `fecha_inicio`, `condiciones`).
 10. **`mantenimiento`**: Servicios posventa y mantenimientos asociados a una garantía (`id_mantenimiento`, `id_garantia`, `kilometraje`, `anio_mantenimiento`, `servicios_realizados`, `fecha_programada`).
 11. **`usuario`**: Cuentas de acceso al sistema (`id_usuario`, `nombre_usuario`, `correo`, `contrasena_hash`, `rol`, `activo`, `fecha_creacion`, `id_empleado`). La contraseña nunca se guarda en texto plano: solo su hash (PBKDF2 con sal, `PasswordHasher` de ASP.NET Core Identity).
+12. **`cotizacion`**: Oferta de precio a un cliente por un vehículo antes de la venta (`id_cotizacion`, `fecha`, `fecha_vencimiento`, `precio_ofrecido`, `estado`, `observaciones`, `id_cliente`, `id_vehiculo`, `id_empleado`). Estados: Pendiente, Aceptada, Rechazada, Vencida. No se puede cotizar un vehículo ya vendido.
+13. **`prueba_manejo`**: Cita de un cliente para probar un vehículo (`id_prueba`, `fecha_hora`, `estado`, `observaciones`, `id_cliente`, `id_vehiculo`, `id_empleado`). Estados: Programada, Realizada, Cancelada. Cada prueba reserva el vehículo 1 hora y no se permiten cruces de horario.
 
 **Convención de nombres en la BD:** tablas y columnas en `snake_case` sin tildes ni `ñ`; índices únicos `uq_<tabla>_<columna>`, índices `ix_<tabla>_<columna>` y llaves foráneas `fk_<tabla>_<tabla_referenciada>`. En C# las propiedades usan `PascalCase` y se mapean con `[Column("...")]`.
 

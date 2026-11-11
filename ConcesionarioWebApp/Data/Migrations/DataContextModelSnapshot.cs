@@ -257,6 +257,64 @@ namespace Data.Migrations
                     b.ToTable("pago");
                 });
 
+            modelBuilder.Entity("Model.QuoteEntity", b =>
+                {
+                    b.Property<int>("IdCotizacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_cotizacion");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdCotizacion"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("estado");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha");
+
+                    b.Property<DateTime>("FechaVencimiento")
+                        .HasColumnType("date")
+                        .HasColumnName("fecha_vencimiento");
+
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int")
+                        .HasColumnName("id_cliente");
+
+                    b.Property<int?>("IdEmpleado")
+                        .HasColumnType("int")
+                        .HasColumnName("id_empleado");
+
+                    b.Property<int>("IdVehiculo")
+                        .HasColumnType("int")
+                        .HasColumnName("id_vehiculo");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("observaciones");
+
+                    b.Property<decimal>("PrecioOfrecido")
+                        .HasColumnType("decimal(12,2)")
+                        .HasColumnName("precio_ofrecido");
+
+                    b.HasKey("IdCotizacion");
+
+                    b.HasIndex("IdCliente")
+                        .HasDatabaseName("ix_cotizacion_id_cliente");
+
+                    b.HasIndex("IdEmpleado")
+                        .HasDatabaseName("ix_cotizacion_id_empleado");
+
+                    b.HasIndex("IdVehiculo")
+                        .HasDatabaseName("ix_cotizacion_id_vehiculo");
+
+                    b.ToTable("cotizacion");
+                });
+
             modelBuilder.Entity("Model.SaleDetailEntity", b =>
                 {
                     b.Property<int>("IdDetalle")
@@ -319,6 +377,56 @@ namespace Data.Migrations
                         .HasDatabaseName("ix_venta_id_empleado");
 
                     b.ToTable("venta");
+                });
+
+            modelBuilder.Entity("Model.TestDriveEntity", b =>
+                {
+                    b.Property<int>("IdPrueba")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_prueba");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdPrueba"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("estado");
+
+                    b.Property<DateTime>("FechaHora")
+                        .HasColumnType("datetime")
+                        .HasColumnName("fecha_hora");
+
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int")
+                        .HasColumnName("id_cliente");
+
+                    b.Property<int?>("IdEmpleado")
+                        .HasColumnType("int")
+                        .HasColumnName("id_empleado");
+
+                    b.Property<int>("IdVehiculo")
+                        .HasColumnType("int")
+                        .HasColumnName("id_vehiculo");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("observaciones");
+
+                    b.HasKey("IdPrueba");
+
+                    b.HasIndex("IdCliente")
+                        .HasDatabaseName("ix_prueba_manejo_id_cliente");
+
+                    b.HasIndex("IdEmpleado")
+                        .HasDatabaseName("ix_prueba_manejo_id_empleado");
+
+                    b.HasIndex("IdVehiculo", "FechaHora")
+                        .HasDatabaseName("ix_prueba_manejo_vehiculo_fecha");
+
+                    b.ToTable("prueba_manejo");
                 });
 
             modelBuilder.Entity("Model.UserEntity", b =>
@@ -510,6 +618,35 @@ namespace Data.Migrations
                     b.Navigation("Venta");
                 });
 
+            modelBuilder.Entity("Model.QuoteEntity", b =>
+                {
+                    b.HasOne("Model.ClientEntity", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cotizacion_cliente");
+
+                    b.HasOne("Model.EmployeeEntity", "Empleado")
+                        .WithMany()
+                        .HasForeignKey("IdEmpleado")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_cotizacion_empleado");
+
+                    b.HasOne("Model.VehicleEntity", "Vehiculo")
+                        .WithMany()
+                        .HasForeignKey("IdVehiculo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_cotizacion_vehiculo");
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Empleado");
+
+                    b.Navigation("Vehiculo");
+                });
+
             modelBuilder.Entity("Model.SaleDetailEntity", b =>
                 {
                     b.HasOne("Model.VehicleEntity", "Vehiculo")
@@ -548,6 +685,35 @@ namespace Data.Migrations
                     b.Navigation("Cliente");
 
                     b.Navigation("Empleado");
+                });
+
+            modelBuilder.Entity("Model.TestDriveEntity", b =>
+                {
+                    b.HasOne("Model.ClientEntity", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_prueba_manejo_cliente");
+
+                    b.HasOne("Model.EmployeeEntity", "Empleado")
+                        .WithMany()
+                        .HasForeignKey("IdEmpleado")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("fk_prueba_manejo_empleado");
+
+                    b.HasOne("Model.VehicleEntity", "Vehiculo")
+                        .WithMany()
+                        .HasForeignKey("IdVehiculo")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_prueba_manejo_vehiculo");
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Empleado");
+
+                    b.Navigation("Vehiculo");
                 });
 
             modelBuilder.Entity("Model.UserEntity", b =>

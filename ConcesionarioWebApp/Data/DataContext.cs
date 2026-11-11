@@ -20,6 +20,8 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<PayEntity> Pays => Set<PayEntity>();
     public DbSet<CreditEntity> Credits => Set<CreditEntity>();
     public DbSet<UserEntity> Users => Set<UserEntity>();
+    public DbSet<QuoteEntity> Quotes => Set<QuoteEntity>();
+    public DbSet<TestDriveEntity> TestDrives => Set<TestDriveEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -126,6 +128,39 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             // Si se elimina el empleado, el usuario se conserva sin vínculo
             e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
                 .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_usuario_empleado");
+        });
+
+        modelBuilder.Entity<QuoteEntity>(e =>
+        {
+            e.HasIndex(x => x.IdCliente).HasDatabaseName("ix_cotizacion_id_cliente");
+            e.HasIndex(x => x.IdVehiculo).HasDatabaseName("ix_cotizacion_id_vehiculo");
+            e.HasIndex(x => x.IdEmpleado).HasDatabaseName("ix_cotizacion_id_empleado");
+
+            e.Property(x => x.Estado).HasConversion<string>().HasMaxLength(20);
+
+            e.HasOne(x => x.Cliente).WithMany().HasForeignKey(x => x.IdCliente)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_cotizacion_cliente");
+            e.HasOne(x => x.Vehiculo).WithMany().HasForeignKey(x => x.IdVehiculo)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_cotizacion_vehiculo");
+            e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_cotizacion_empleado");
+        });
+
+        modelBuilder.Entity<TestDriveEntity>(e =>
+        {
+            e.HasIndex(x => x.IdCliente).HasDatabaseName("ix_prueba_manejo_id_cliente");
+            // Índice compuesto: acelera la validación de "vehículo ya agendado a esa hora"
+            e.HasIndex(x => new { x.IdVehiculo, x.FechaHora }).HasDatabaseName("ix_prueba_manejo_vehiculo_fecha");
+            e.HasIndex(x => x.IdEmpleado).HasDatabaseName("ix_prueba_manejo_id_empleado");
+
+            e.Property(x => x.Estado).HasConversion<string>().HasMaxLength(20);
+
+            e.HasOne(x => x.Cliente).WithMany().HasForeignKey(x => x.IdCliente)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_prueba_manejo_cliente");
+            e.HasOne(x => x.Vehiculo).WithMany().HasForeignKey(x => x.IdVehiculo)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_prueba_manejo_vehiculo");
+            e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_prueba_manejo_empleado");
         });
     }
 }

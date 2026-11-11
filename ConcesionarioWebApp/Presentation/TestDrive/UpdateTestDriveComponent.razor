@@ -1,0 +1,82 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject TestDriveLog TestDriveLog
+@inject ClientLog ClientLog
+@inject VehicleLog VehicleLog
+@inject EmployeeLog EmployeeLog
+
+<h3>Actualizar Prueba de Manejo (ID: @Id)</h3>
+
+@if (objTestDrive == null)
+{
+    @if (message == null)
+    {
+        <p>Cargando datos de la prueba de manejo...</p>
+    }
+}
+else
+{
+    <EditForm Model="objTestDrive" OnValidSubmit="UpdateTestDrive">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <TestDriveFields TestDrive="objTestDrive" Clients="clients" Vehicles="vehicles" Employees="employees" />
+
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="/testdrive/list" class="btn btn-secondary ms-2">Cancelar</a>
+    </EditForm>
+}
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private TestDriveEntity? objTestDrive;
+    private List<ClientEntity> clients = new();
+    private List<VehicleEntity> vehicles = new();
+    private List<EmployeeEntity> employees = new();
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            clients = await ClientLog.ClientListAsync();
+            // Al editar se listan todos: el vehículo pudo venderse después de la prueba
+            vehicles = await VehicleLog.VehicleListAsync();
+            employees = await EmployeeLog.EmployeeListAsync();
+            objTestDrive = await TestDriveLog.GetTestDriveByIdAsync(Id);
+
+            if (objTestDrive == null)
+            {
+                message = "No se encontró la prueba de manejo especificada.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar la prueba de manejo: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateTestDrive()
+    {
+        try
+        {
+            if (objTestDrive != null)
+            {
+                await TestDriveLog.UpdateTestDriveAsync(objTestDrive);
+                NavManager.NavigateTo("/testdrive/list");
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al actualizar la prueba de manejo: {ex.Message}";
+        }
+    }
+}

@@ -1,0 +1,59 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject QuoteLog QuoteLog
+@inject ClientLog ClientLog
+@inject VehicleLog VehicleLog
+@inject EmployeeLog EmployeeLog
+
+<h3>Nueva Cotización</h3>
+
+<EditForm Model="objQuote" OnValidSubmit="SaveQuote" FormName="FrmQuote">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <QuoteFields Quote="objQuote" Clients="clients" Vehicles="vehicles" Employees="employees" />
+
+    <button type="submit" class="btn btn-primary">Guardar Cotización</button>
+    <a href="/quote/list" class="btn btn-secondary ms-2">Cancelar</a>
+</EditForm>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private QuoteEntity objQuote = new();
+    private List<ClientEntity> clients = new();
+    private List<VehicleEntity> vehicles = new();
+    private List<EmployeeEntity> employees = new();
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            clients = await ClientLog.ClientListAsync();
+            vehicles = await VehicleLog.AvailableVehicleListAsync(); // solo vehículos sin vender
+            employees = await EmployeeLog.EmployeeListAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar los datos del formulario: {ex.Message}";
+        }
+    }
+
+    private async Task SaveQuote()
+    {
+        try
+        {
+            await QuoteLog.CreateQuoteAsync(objQuote);
+            NavManager.NavigateTo("/quote/list");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al guardar la cotización: {ex.Message}";
+        }
+    }
+}
