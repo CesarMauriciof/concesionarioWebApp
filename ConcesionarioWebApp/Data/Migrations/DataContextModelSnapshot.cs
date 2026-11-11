@@ -151,6 +151,54 @@ namespace Data.Migrations
                     b.ToTable("empleado");
                 });
 
+            modelBuilder.Entity("Model.ExternalLoginEntity", b =>
+                {
+                    b.Property<int>("IdLogin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_login");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("IdLogin"));
+
+                    b.Property<string>("ClaveProveedor")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("clave_proveedor");
+
+                    b.Property<string>("CorreoProveedor")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("correo_proveedor");
+
+                    b.Property<DateTime>("FechaVinculacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("fecha_vinculacion")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int")
+                        .HasColumnName("id_usuario");
+
+                    b.Property<string>("Proveedor")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("proveedor");
+
+                    b.HasKey("IdLogin");
+
+                    b.HasIndex("IdUsuario")
+                        .HasDatabaseName("ix_usuario_login_externo_id_usuario");
+
+                    b.HasIndex("Proveedor", "ClaveProveedor")
+                        .IsUnique()
+                        .HasDatabaseName("uq_usuario_login_externo_proveedor_clave");
+
+                    b.ToTable("usuario_login_externo");
+                });
+
             modelBuilder.Entity("Model.HeadquartersEntity", b =>
                 {
                     b.Property<int>("IdSede")
@@ -476,6 +524,10 @@ namespace Data.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("rol");
 
+                    b.Property<DateTime?>("UltimoAcceso")
+                        .HasColumnType("datetime")
+                        .HasColumnName("ultimo_acceso");
+
                     b.HasKey("IdUsuario");
 
                     b.HasIndex("Correo")
@@ -592,6 +644,18 @@ namespace Data.Migrations
                         .HasConstraintName("fk_empleado_sede");
 
                     b.Navigation("Sede");
+                });
+
+            modelBuilder.Entity("Model.ExternalLoginEntity", b =>
+                {
+                    b.HasOne("Model.UserEntity", "Usuario")
+                        .WithMany("LoginsExternos")
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_usuario_login_externo_usuario");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("Model.MaintenanceEntity", b =>
@@ -782,6 +846,11 @@ namespace Data.Migrations
                     b.Navigation("DetallesVenta");
 
                     b.Navigation("Pagos");
+                });
+
+            modelBuilder.Entity("Model.UserEntity", b =>
+                {
+                    b.Navigation("LoginsExternos");
                 });
 
             modelBuilder.Entity("Model.VehicleEntity", b =>
