@@ -1,6 +1,8 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject MaintenanceLog MaintenanceLog
+@inject WarrantyLog WarrantyLog
 
 <h3>Actualizar Mantenimiento (ID: @Id)</h3>
 
@@ -16,14 +18,14 @@ else
 
         <div class="mb-3">
             <label class="form-label">Garantía Asociada:</label>
-            <InputSelect @bind-Value="objMaintenance.id_garantia" class="form-control">
+            <InputSelect @bind-Value="objMaintenance.IdGarantia" class="form-control">
                 <option value="0">-- Seleccione una Garantía --</option>
                 @if (warranties != null)
                 {
                     @foreach (var warranty in warranties)
                     {
-                        <option value="@warranty.id_garantia">
-                            Garantía #@warranty.id_garantia - Detalle #@warranty.id_detalle (desde @warranty.fecha_inicio.ToString("dd/MM/yyyy"))
+                        <option value="@warranty.IdGarantia">
+                            Garantía #@warranty.IdGarantia - Detalle #@warranty.IdDetalle (desde @warranty.FechaInicio.ToString("dd/MM/yyyy"))
                         </option>
                     }
                 }
@@ -32,22 +34,22 @@ else
 
         <div class="mb-3">
             <label class="form-label">Kilometraje:</label>
-            <InputNumber @bind-Value="objMaintenance.kilometraje" class="form-control" />
+            <InputNumber @bind-Value="objMaintenance.Kilometraje" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Año del Mantenimiento:</label>
-            <InputNumber @bind-Value="objMaintenance.año_mantenimiento" class="form-control" />
+            <InputNumber @bind-Value="objMaintenance.AnioMantenimiento" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Servicios Realizados:</label>
-            <InputTextArea @bind-Value="objMaintenance.servicios_realizados" class="form-control" />
+            <InputTextArea @bind-Value="objMaintenance.ServiciosRealizados" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Fecha Programada:</label>
-            <InputDate @bind-Value="objMaintenance.fecha_programada" class="form-control" />
+            <InputDate @bind-Value="objMaintenance.FechaProgramada" class="form-control" />
         </div>
 
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -72,8 +74,8 @@ else
     {
         try
         {
-            warranties = await Task.Run(() => WarrantyLog.WarrantyList());
-            objMaintenance = await Task.Run(() => MaintenanceLog.GetMaintenanceById(Id));
+            warranties = await WarrantyLog.WarrantyListAsync();
+            objMaintenance = await MaintenanceLog.GetMaintenanceByIdAsync(Id);
 
             if (objMaintenance == null)
             {
@@ -86,20 +88,20 @@ else
         }
     }
 
-    private void UpdateMaintenance()
+    private async Task UpdateMaintenance()
     {
         try
         {
             if (objMaintenance != null)
             {
-                MaintenanceLog.UpdateMaintenance(objMaintenance);
+                await MaintenanceLog.UpdateMaintenanceAsync(objMaintenance);
                 message = "¡Mantenimiento actualizado con éxito!";
                 NavManager.NavigateTo("/maintenance/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

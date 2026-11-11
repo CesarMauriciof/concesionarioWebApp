@@ -1,6 +1,9 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject ClientLog ClientLog
+@inject EmployeeLog EmployeeLog
+@inject SaleLog SaleLog
 
 <h3>Registrar Nueva Venta</h3>
 
@@ -10,28 +13,28 @@
 
     <div class="mb-3">
         <label class="form-label">Fecha de Venta:</label>
-        <InputDate @bind-Value="objSale.fecha" class="form-control" />
+        <InputDate @bind-Value="objSale.Fecha" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Total Pagado:</label>
-        <InputNumber @bind-Value="objSale.total_pagado" class="form-control" />
+        <InputNumber @bind-Value="objSale.TotalPagado" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Cliente:</label>
-        <InputSelect @bind-Value="objSale.id_cliente" class="form-control">
+        <InputSelect @bind-Value="objSale.IdCliente" class="form-control">
             <option value="0">-- Seleccione un cliente --</option>
             @foreach (var client in clients)
             {
-                <option value="@client.Id_Cliente">@client.Nombre (@client.Cedula)</option>
+                <option value="@client.IdCliente">@client.Nombre (@client.Cedula)</option>
             }
         </InputSelect>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Empleado:</label>
-        <InputSelect @bind-Value="objSale.id_empleado" class="form-control">
+        <InputSelect @bind-Value="objSale.IdEmpleado" class="form-control">
             <option value="0">-- Seleccione un empleado --</option>
             @foreach (var employee in employees)
             {
@@ -52,7 +55,7 @@
 @code {
     SaleEntity objSale = new SaleEntity()
     {
-        fecha = DateTime.Today // Inicializamos con la fecha actual por defecto
+        Fecha = DateTime.Today // Inicializamos con la fecha actual por defecto
     };
 
     private string? successMessage;
@@ -65,8 +68,8 @@
         try
         {
             // Carga de las listas foráneas desde la capa lógica
-            clients = await Task.Run(() => ClientLog.ClientList());
-            employees = await Task.Run(() => EmployeeLog.EmployeeList());
+            clients = await ClientLog.ClientListAsync();
+            employees = await EmployeeLog.EmployeeListAsync();
         }
         catch (Exception ex)
         {
@@ -74,18 +77,18 @@
         }
     }
 
-    private void SaveSale()
+    private async Task SaveSale()
     {
         try
         {
-            SaleLog.CreateSale(objSale);
+            await SaleLog.CreateSaleAsync(objSale);
             successMessage = "¡La venta se guardó exitosamente!";
-            objSale = new SaleEntity { fecha = DateTime.Today };
+            objSale = new SaleEntity { Fecha = DateTime.Today };
             NavManager.NavigateTo("/sale/list");
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al guardar la venta: {ex.InnerException?.Message ?? ex.Message}";
+            successMessage = $"Error al guardar la venta: {ex.Message}";
         }
     }
 }

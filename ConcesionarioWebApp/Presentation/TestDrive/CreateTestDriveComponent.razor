@@ -1,0 +1,59 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject TestDriveLog TestDriveLog
+@inject ClientLog ClientLog
+@inject VehicleLog VehicleLog
+@inject EmployeeLog EmployeeLog
+
+<h3>Agendar Prueba de Manejo</h3>
+
+<EditForm Model="objTestDrive" OnValidSubmit="SaveTestDrive" FormName="FrmTestDrive">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <TestDriveFields TestDrive="objTestDrive" Clients="clients" Vehicles="vehicles" Employees="employees" />
+
+    <button type="submit" class="btn btn-primary">Agendar</button>
+    <a href="/testdrive/list" class="btn btn-secondary ms-2">Cancelar</a>
+</EditForm>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private TestDriveEntity objTestDrive = new();
+    private List<ClientEntity> clients = new();
+    private List<VehicleEntity> vehicles = new();
+    private List<EmployeeEntity> employees = new();
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            clients = await ClientLog.ClientListAsync();
+            vehicles = await VehicleLog.AvailableVehicleListAsync(); // solo vehículos sin vender
+            employees = await EmployeeLog.EmployeeListAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar los datos del formulario: {ex.Message}";
+        }
+    }
+
+    private async Task SaveTestDrive()
+    {
+        try
+        {
+            await TestDriveLog.CreateTestDriveAsync(objTestDrive);
+            NavManager.NavigateTo("/testdrive/list");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al agendar la prueba de manejo: {ex.Message}";
+        }
+    }
+}

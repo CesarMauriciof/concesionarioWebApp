@@ -1,0 +1,11 @@
+@page "/testdrive/update/{Id:int}"
+@using Presentation.TestDrive
+
+<PageTitle>Editar prueba de manejo</PageTitle>
+
+<UpdateTestDriveComponent Id="Id" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+}

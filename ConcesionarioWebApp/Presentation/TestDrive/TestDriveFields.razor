@@ -1,0 +1,79 @@
+@using Model
+
+@* Campos compartidos por los formularios de crear y actualizar prueba de manejo *@
+
+<div class="mb-3">
+    <label class="form-label">Cliente:</label>
+    <InputSelect @bind-Value="TestDrive.IdCliente" class="form-select">
+        <option value="0">-- Seleccione un cliente --</option>
+        @foreach (var client in Clients)
+        {
+            <option value="@client.IdCliente">@client.Nombre (@client.Cedula)</option>
+        }
+    </InputSelect>
+    <ValidationMessage For="() => TestDrive.IdCliente" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Vehículo:</label>
+    <InputSelect @bind-Value="TestDrive.IdVehiculo" class="form-select">
+        <option value="0">-- Seleccione un vehículo --</option>
+        @foreach (var vehicle in Vehicles)
+        {
+            <option value="@vehicle.IdVehiculo">@vehicle.Marca @vehicle.Modelo - VIN @vehicle.Vin (@(vehicle.Sede?.NombreSede ?? "Sin sede"))</option>
+        }
+    </InputSelect>
+    <ValidationMessage For="() => TestDrive.IdVehiculo" />
+    @if (!Vehicles.Any())
+    {
+        <div class="form-text text-warning">No hay vehículos disponibles: todos están vendidos. Registre uno nuevo en <a href="/vehicle/create">Vehículos</a>.</div>
+    }
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Asesor que acompaña (opcional):</label>
+    <InputSelect @bind-Value="TestDrive.IdEmpleado" class="form-select">
+        <option value="">-- Sin asesor --</option>
+        @foreach (var employee in Employees)
+        {
+            <option value="@employee.IdEmpleado">@employee.Nombre - @employee.Cargo</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Fecha y hora:</label>
+        <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="TestDrive.FechaHora" class="form-control" />
+        <div class="form-text">Cada prueba reserva el vehículo durante 1 hora.</div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Estado:</label>
+        <InputSelect @bind-Value="TestDrive.Estado" class="form-select">
+            @foreach (var status in Enum.GetValues<TestDriveStatus>())
+            {
+                <option value="@status">@status</option>
+            }
+        </InputSelect>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Observaciones:</label>
+    <InputTextArea @bind-Value="TestDrive.Observaciones" class="form-control" rows="3" placeholder="Ej. El cliente presentó licencia de conducción C1" />
+    <ValidationMessage For="() => TestDrive.Observaciones" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public TestDriveEntity TestDrive { get; set; } = default!;
+
+    [Parameter]
+    public List<ClientEntity> Clients { get; set; } = new();
+
+    [Parameter]
+    public List<VehicleEntity> Vehicles { get; set; } = new();
+
+    [Parameter]
+    public List<EmployeeEntity> Employees { get; set; } = new();
+}

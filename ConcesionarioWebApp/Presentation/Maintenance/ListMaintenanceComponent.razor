@@ -2,6 +2,7 @@
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject MaintenanceLog MaintenanceLog
 
 <h3>Listado de Mantenimientos</h3>
 
@@ -39,17 +40,17 @@
         @foreach (var maintenance in maintenances)
         {
             <tr>
-                <td>@maintenance.id_mantenimiento</td>
-                <td>@maintenance.id_garantia</td>
-                <td>@maintenance.kilometraje.ToString("N0") km</td>
-                <td>@maintenance.año_mantenimiento</td>
-                <td>@maintenance.servicios_realizados</td>
-                <td>@maintenance.fecha_programada.ToString("dd/MM/yyyy")</td>
+                <td>@maintenance.IdMantenimiento</td>
+                <td>@maintenance.IdGarantia</td>
+                <td>@maintenance.Kilometraje.ToString("N0") km</td>
+                <td>@maintenance.AnioMantenimiento</td>
+                <td>@maintenance.ServiciosRealizados</td>
+                <td>@maintenance.FechaProgramada.ToString("dd/MM/yyyy")</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(maintenance.id_mantenimiento)">
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(maintenance.IdMantenimiento)">
                         Editar
                     </button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(maintenance.id_mantenimiento)">
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(maintenance.IdMantenimiento)">
                         Eliminar
                     </button>
                 </td>
@@ -77,7 +78,7 @@
     {
         try
         {
-            maintenances = await Task.Run(() => MaintenanceLog.MaintenanceList());
+            maintenances = await MaintenanceLog.MaintenanceListAsync();
         }
         catch (Exception ex)
         {
@@ -95,13 +96,13 @@
 
         try
         {
-            MaintenanceLog.DeleteMaintenance(id);
+            await MaintenanceLog.DeleteMaintenanceAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadMaintenances();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar el mantenimiento: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el mantenimiento: {ex.Message}";
         }
     }
 

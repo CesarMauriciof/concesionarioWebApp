@@ -6,32 +6,31 @@ namespace Model;
 [Table("pago")]
 public class PayEntity
 {
-    // Data annotations Llave primaria
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int id_pago { get; set; }
+    [Column("id_pago")]
+    public int IdPago { get; set; }
 
-    // Llave foránea a Venta
-    [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una venta.")]
-    public int id_venta { get; set; }
-    
-    // Relación Muchos a Uno: Un Pago pertenece a una Venta
-    [ForeignKey(nameof(id_venta))]
+    [Column("id_venta")]
+    public int IdVenta { get; set; }
+
+    // Un pago pertenece a una venta
+    [ForeignKey(nameof(IdVenta))]
     public virtual SaleEntity? Venta { get; set; }
-    
-    [Required]
-    [Column(TypeName = "decimal(12,2)")]
-    public decimal monto { get; set; }
 
-    [Required]
-    public DateTime fecha_pago { get; set; }
+    [Range(typeof(decimal), "0.01", "9999999999.99", ErrorMessage = "El monto debe ser mayor que cero.")]
+    [Column("monto", TypeName = "decimal(12,2)")]
+    public decimal Monto { get; set; }
 
-    // Data annotations tamaño del atributo en la bd
-    [Required]
+    [Column("fecha_pago", TypeName = "datetime")]
+    public DateTime FechaPago { get; set; }
+
+    [Required(ErrorMessage = "Debe seleccionar un método de pago.")]
     [StringLength(100)]
-    public string metodo_pago { get; set; } = string.Empty;
+    [Column("metodo_pago")]
+    public string MetodoPago { get; set; } = string.Empty;
 
-    // Relación Uno a Muchos / Opcional: Un Pago puede tener asociados uno o más Créditos
+    // Un pago puede tener asociados uno o más créditos
     public virtual ICollection<CreditEntity> Creditos { get; set; } = new List<CreditEntity>();
 }

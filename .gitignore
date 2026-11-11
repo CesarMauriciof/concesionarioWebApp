@@ -31,6 +31,8 @@ coverage/
 # Node
 node_modules/
 dist/
+# Excepción: librerías front-end (Bootstrap) que la app sirve desde wwwroot/lib
+!**/wwwroot/lib/**/dist/
 
 # Compilados Java
 *.class

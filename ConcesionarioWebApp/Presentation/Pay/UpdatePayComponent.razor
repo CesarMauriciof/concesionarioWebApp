@@ -1,6 +1,8 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject PayLog PayLog
+@inject SaleLog SaleLog
 
 <h3>Actualizar Pago (ID: @Id)</h3>
 
@@ -19,12 +21,12 @@ else
 
         <div class="mb-3">
             <label class="form-label">Venta Asociada:</label>
-            <InputSelect @bind-Value="objPay.id_venta" class="form-control">
+            <InputSelect @bind-Value="objPay.IdVenta" class="form-control">
                 <option value="0">-- Seleccione una Venta --</option>
                 @foreach (var sale in sales)
                 {
-                    <option value="@sale.id_venta">
-                        Venta #@sale.id_venta (@sale.total_pagado.ToString("C"))
+                    <option value="@sale.IdVenta">
+                        Venta #@sale.IdVenta (@sale.TotalPagado.ToString("C"))
                     </option>
                 }
             </InputSelect>
@@ -32,17 +34,17 @@ else
 
         <div class="mb-3">
             <label class="form-label">Monto:</label>
-            <InputNumber @bind-Value="objPay.monto" class="form-control" />
+            <InputNumber @bind-Value="objPay.Monto" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Fecha de Pago:</label>
-            <InputDate @bind-Value="objPay.fecha_pago" class="form-control" />
+            <InputDate @bind-Value="objPay.FechaPago" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Método de Pago:</label>
-            <InputSelect @bind-Value="objPay.metodo_pago" class="form-control">
+            <InputSelect @bind-Value="objPay.MetodoPago" class="form-control">
                 <option value="">-- Seleccione Método --</option>
                 <option value="EFECTIVO">Efectivo</option>
                 <option value="TRANSFERENCIA">Transferencia Bancaria</option>
@@ -73,8 +75,8 @@ else
     {
         try
         {
-            sales = await Task.Run(() => SaleLog.SaleList());
-            objPay = await Task.Run(() => PayLog.GetPayById(Id));
+            sales = await SaleLog.SaleListAsync();
+            objPay = await PayLog.GetPayByIdAsync(Id);
 
             if (objPay == null)
             {
@@ -87,20 +89,20 @@ else
         }
     }
 
-    private void UpdatePay()
+    private async Task UpdatePay()
     {
         try
         {
             if (objPay != null)
             {
-                PayLog.UpdatePay(objPay);
+                await PayLog.UpdatePayAsync(objPay);
                 message = "¡Pago actualizado con éxito!";
                 NavManager.NavigateTo("/pay/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

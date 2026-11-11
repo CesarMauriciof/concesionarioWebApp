@@ -3,33 +3,32 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model;
 
-// 4. Entidad Crédito
 [Table("credito")]
 public class CreditEntity
 {
-    // Data annotations Llave primaria
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int id_credito { get; set; }
+    [Column("id_credito")]
+    public int IdCredito { get; set; }
 
-    // Llave foránea a Pago
-    [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un pago.")]
-    public int id_pago { get; set; }
+    [Column("id_pago")]
+    public int IdPago { get; set; }
 
-    // Relación Muchos a Uno: Un Crédito está vinculado a un Pago específico
-    [ForeignKey(nameof(id_pago))]
+    // Un crédito está vinculado a un pago
+    [ForeignKey(nameof(IdPago))]
     public virtual PayEntity? Pago { get; set; }
 
-    // Data annotations tamaño del atributo en la bd
-    [Required]
+    [Required(ErrorMessage = "La entidad bancaria es obligatoria.")]
     [StringLength(45)]
-    public string entidad_bancaria { get; set; } = string.Empty;
+    [Column("entidad_bancaria")]
+    public string EntidadBancaria { get; set; } = string.Empty;
 
-    [Required]
-    [Column(TypeName = "decimal(12,2)")]
-    public decimal monto_aprobado { get; set; }
+    [Range(typeof(decimal), "0.01", "9999999999.99", ErrorMessage = "El monto aprobado debe ser mayor que cero.")]
+    [Column("monto_aprobado", TypeName = "decimal(12,2)")]
+    public decimal MontoAprobado { get; set; }
 
-    [Required]
-    public int numero_cuotas { get; set; }
+    [Range(1, 360, ErrorMessage = "El número de cuotas debe estar entre 1 y 360.")]
+    [Column("numero_cuotas")]
+    public int NumeroCuotas { get; set; }
 }

@@ -1,70 +1,25 @@
 using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de ventas.</summary>
+public class SaleLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<SaleEntity>(dbFactory)
 {
-    public class SaleLog
-    {
-        /*
-         * Método que permite crear una nueva venta en la base de datos.
-         */
-        public static void CreateSale(SaleEntity objSale)
-        {
-            using (var db = new DataContext())
-            {
-                db.Sales.Add(objSale);
-                db.SaveChanges();
-            }
-        }
+    /// <summary>Devuelve todos los ventas.</summary>
+    public Task<List<SaleEntity>> SaleListAsync() => ListAsync(q => q.Include(s => s.Cliente).Include(s => s.Empleado).OrderByDescending(s => s.Fecha));
 
-        /*
-         * Método que devuelve una lista de todas las ventas existentes en la base de datos.
-         */
-        public static List<SaleEntity> SaleList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.Sales.ToList();
-            }
-        }
+    /// <summary>Busca una venta por su ID. Devuelve null si no existe.</summary>
+    public Task<SaleEntity?> GetSaleByIdAsync(int id) => GetByIdAsync(id);
 
-        /*
-         * Método que actualiza una venta existente en la base de datos.
-         */
-        public static void UpdateSale(SaleEntity objSale)
-        {
-            using (var db = new DataContext())
-            {
-                db.Sales.Update(objSale);
-                db.SaveChanges();
-            }
-        }
+    /// <summary>Registra una venta.</summary>
+    public Task CreateSaleAsync(SaleEntity entity) => CreateAsync(entity);
 
-        /*
-         * Método que busca una venta por su ID. Devuelve null si no existe.
-         */
-        public static SaleEntity? GetSaleById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.Sales.Find(id);
-            }
-        }
+    /// <summary>Actualiza una venta.</summary>
+    public Task UpdateSaleAsync(SaleEntity entity) => UpdateAsync(entity);
 
-        /*
-         * Método que elimina una venta por su ID.
-         */
-        public static void DeleteSale(int id)
-        {
-            using (var db = new DataContext())
-            {
-                var entity = db.Sales.Find(id);
-                if (entity != null)
-                {
-                    db.Sales.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
-        }
-    }
+    /// <summary>Elimina una venta por su ID.</summary>
+    public Task DeleteSaleAsync(int id) => DeleteAsync(id);
 }

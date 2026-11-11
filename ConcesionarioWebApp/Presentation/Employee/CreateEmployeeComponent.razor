@@ -1,6 +1,8 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject EmployeeLog EmployeeLog
+@inject HeadquartersLog HeadquartersLog
 
 <h3>Registrar Nuevo Empleado</h3>
 
@@ -62,7 +64,7 @@
         try
         {
             // Cargamos las sedes disponibles para poblar el menú desplegable
-            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+            headquartersList = await HeadquartersLog.HeadquartersListAsync();
         }
         catch (Exception ex)
         {
@@ -70,18 +72,18 @@
         }
     }
 
-    private void SaveEmployee()
+    private async Task SaveEmployee()
     {
         try
         {
-            EmployeeLog.CreateEmployee(objEmployee);
+            await EmployeeLog.CreateEmployeeAsync(objEmployee);
             message = "¡Empleado guardado con éxito!";
             objEmployee = new EmployeeEntity();
             NavManager.NavigateTo("/employee/list");
         }
         catch (Exception ex)
         {
-            message = $"Error al guardar el empleado: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al guardar el empleado: {ex.Message}";
         }
     }
 

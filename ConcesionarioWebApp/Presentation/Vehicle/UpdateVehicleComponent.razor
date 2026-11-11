@@ -1,7 +1,8 @@
-﻿@using ConcesionarioWebApp.Model
 @using Model
 @using Logic
 @inject NavigationManager Navigation
+@inject HeadquartersLog HeadquartersLog
+@inject VehicleLog VehicleLog
 
 <h3>Actualizar Vehículo</h3>
 
@@ -53,7 +54,7 @@ else
         </div>
 
         <button type="submit" class="btn btn-primary">Actualizar</button>
-        <a href="/ListVehiclePage" class="btn btn-secondary ms-2">Cancelar</a>
+        <a href="/vehicle/list" class="btn btn-secondary ms-2">Cancelar</a>
     </EditForm>
 }
 
@@ -74,8 +75,8 @@ else
     {
         try
         {
-            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
-            vehicle = await Task.Run(() => VehicleLog.GetVehicleById(Id));
+            headquartersList = await HeadquartersLog.HeadquartersListAsync();
+            vehicle = await VehicleLog.GetVehicleByIdAsync(Id);
 
             if (vehicle == null)
             {
@@ -88,19 +89,19 @@ else
         }
     }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         try
         {
             if (vehicle != null)
             {
-                VehicleLog.UpdateVehicle(vehicle);
-                Navigation.NavigateTo("/ListVehiclePage");
+                await VehicleLog.UpdateVehicleAsync(vehicle);
+                Navigation.NavigateTo("/vehicle/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar el vehículo: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar el vehículo: {ex.Message}";
         }
     }
 }

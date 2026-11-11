@@ -1,6 +1,8 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject CreditLog CreditLog
+@inject PayLog PayLog
 
 <h3>Registrar Crédito Bancario</h3>
 
@@ -10,14 +12,14 @@
 
     <div class="mb-3">
         <label class="form-label">Pago Asociado:</label>
-        <InputSelect @bind-Value="objCredit.id_pago" class="form-control">
+        <InputSelect @bind-Value="objCredit.IdPago" class="form-control">
             <option value="0">-- Seleccione un Pago --</option>
             @if (pays != null)
             {
                 @foreach (var pay in pays)
                 {
-                    <option value="@pay.id_pago">
-                        Pago #@pay.id_pago - Venta #@pay.id_venta (@pay.monto.ToString("C"))
+                    <option value="@pay.IdPago">
+                        Pago #@pay.IdPago - Venta #@pay.IdVenta (@pay.Monto.ToString("C"))
                     </option>
                 }
             }
@@ -26,17 +28,17 @@
 
     <div class="mb-3">
         <label class="form-label">Entidad Bancaria:</label>
-        <InputText @bind-Value="objCredit.entidad_bancaria" class="form-control" placeholder="Ej. Bancolombia, BBVA, Davivienda" />
+        <InputText @bind-Value="objCredit.EntidadBancaria" class="form-control" placeholder="Ej. Bancolombia, BBVA, Davivienda" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Monto Aprobado:</label>
-        <InputNumber @bind-Value="objCredit.monto_aprobado" class="form-control" />
+        <InputNumber @bind-Value="objCredit.MontoAprobado" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Número de Cuotas:</label>
-        <InputNumber @bind-Value="objCredit.numero_cuotas" class="form-control" />
+        <InputNumber @bind-Value="objCredit.NumeroCuotas" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar Crédito</button>
@@ -58,7 +60,7 @@
         try
         {
             // Se cargan los pagos registrados para vincular el crédito al ID de pago correspondiente
-            pays = await Task.Run(() => PayLog.PayList());
+            pays = await PayLog.PayListAsync();
         }
         catch (Exception ex)
         {
@@ -66,18 +68,18 @@
         }
     }
 
-    private void SaveCredit()
+    private async Task SaveCredit()
     {
         try
         {
-            CreditLog.CreateCredit(objCredit);
-            successMessage = $"¡El crédito con {objCredit.entidad_bancaria} por ${objCredit.monto_aprobado} se registró exitosamente!";
+            await CreditLog.CreateCreditAsync(objCredit);
+            successMessage = $"¡El crédito con {objCredit.EntidadBancaria} por ${objCredit.MontoAprobado} se registró exitosamente!";
             objCredit = new CreditEntity();
             NavManager.NavigateTo("/credit/list");
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el crédito: {ex.InnerException?.Message ?? ex.Message}";
+            successMessage = $"Error al registrar el crédito: {ex.Message}";
         }
     }
 }

@@ -1,57 +1,37 @@
-﻿using ConcesionarioWebApp.Model;
 using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
+using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de vehículos.</summary>
+public class VehicleLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<VehicleEntity>(dbFactory)
 {
-    public class VehicleLog
+    /// <summary>Devuelve todos los vehículos.</summary>
+    public Task<List<VehicleEntity>> VehicleListAsync() => ListAsync(q => q.Include(v => v.Sede).OrderBy(v => v.Marca).ThenBy(v => v.Modelo));
+
+    /// <summary>Devuelve los vehículos que aún no han sido vendidos (sin detalle de venta).</summary>
+    public Task<List<VehicleEntity>> AvailableVehicleListAsync() =>
+        ListAsync(q => q.Include(v => v.Sede).Where(v => !v.DetallesVenta.Any())
+            .OrderBy(v => v.Marca).ThenBy(v => v.Modelo));
+
+    /// <summary>Busca un vehículo por su ID. Devuelve null si no existe.</summary>
+    public Task<VehicleEntity?> GetVehicleByIdAsync(int id) => GetByIdAsync(id);
+
+    /// <summary>Registra un vehículo.</summary>
+    public Task CreateVehicleAsync(VehicleEntity entity) => CreateAsync(entity);
+
+    /// <summary>Actualiza un vehículo.</summary>
+    public Task UpdateVehicleAsync(VehicleEntity entity) => UpdateAsync(entity);
+
+    /// <summary>Elimina un vehículo por su ID.</summary>
+    public Task DeleteVehicleAsync(int id) => DeleteAsync(id);
+
+    protected override void Normalize(VehicleEntity entity)
     {
-        public static void CreateVehicle(VehicleEntity objVehicle)
-        {
-            using (var db = new DataContext())
-            {
-                db.Vehicles.Add(objVehicle);
-                db.SaveChanges();
-            }
-        }
-
-        public static List<VehicleEntity> VehicleList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.Vehicles.ToList();
-            }
-        }
-
-        // ➕ Método nuevo para buscar por ID (necesario para la edición)
-        public static VehicleEntity? GetVehicleById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.Vehicles.Find(id);
-            }
-        }
-
-        public static void UpdateVehicle(VehicleEntity objVehicle)
-        {
-            using (var db = new DataContext())
-            {
-                db.Vehicles.Update(objVehicle);
-                db.SaveChanges();
-            }
-        }
-
-        // ➕ Método nuevo para eliminar un vehículo
-        public static void DeleteVehicle(int id)
-        {
-            using (var db = new DataContext())
-            {
-                var vehicle = db.Vehicles.Find(id);
-                if (vehicle != null)
-                {
-                    db.Vehicles.Remove(vehicle);
-                    db.SaveChanges();
-                }
-            }
-        }
+        entity.Vin = entity.Vin.Trim().ToUpperInvariant();
+        entity.Marca = entity.Marca.Trim();
+        entity.Modelo = entity.Modelo.Trim();
     }
 }

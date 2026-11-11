@@ -1,92 +1,91 @@
-﻿@using ConcesionarioWebApp.Model
 @using Logic
+@using Model
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject VehicleLog VehicleLog
 
-<div class="container mt-4">
-    <div class="mb-3">
-        <button class="btn btn-primary" @onclick="NavigateToCreate">Nuevo Vehículo</button>
-    </div>
+<h3>Gestión de Vehículos</h3>
 
-    @if (!string.IsNullOrEmpty(errorMessage))
+<div class="mb-3">
+    <a href="/vehicle/create" class="btn btn-primary">Nuevo Vehículo</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>VIN</th>
+        <th>Marca</th>
+        <th>Modelo</th>
+        <th>Precio</th>
+        <th>Sede</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (vehicles == null)
     {
-        <div class="alert alert-danger" role="alert">
-            <strong>Ocurrió un error:</strong> @errorMessage
-        </div>
-    }
-    else if (vehicles == null)
-    {
-        <div class="alert alert-info">Cargando vehículos...</div>
+        <tr>
+            <td colspan="7">Cargando vehículos...</td>
+        </tr>
     }
     else if (!vehicles.Any())
     {
-        <div class="alert alert-warning">No hay vehículos registrados en la base de datos. Usa el botón de arriba para crear uno.</div>
+        <tr>
+            <td colspan="7">No hay vehículos registrados.</td>
+        </tr>
     }
     else
     {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>VIN</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Precio</th>
-                    <th>Sede</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var v in vehicles)
-                {
-                    <tr>
-                        <td>@v.IdVehiculo</td>
-                        <td>@v.Vin</td>
-                        <td>@v.Marca</td>
-                        <td>@v.Modelo</td>
-                        <td>@v.Precio.ToString("C")</td>
-                        <td>@v.IdSede</td>
-                        <td>
-                            <button class="btn btn-warning btn-sm" @onclick="() => NavigateToUpdate(v.IdVehiculo)">Editar</button>
-                            <button class="btn btn-danger btn-sm" @onclick="() => Delete(v.IdVehiculo)">Eliminar</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        @foreach (var v in vehicles)
+        {
+            <tr>
+                <td>@v.IdVehiculo</td>
+                <td>@v.Vin</td>
+                <td>@v.Marca</td>
+                <td>@v.Modelo</td>
+                <td>@v.Precio.ToString("C")</td>
+                <td>@(v.Sede?.NombreSede ?? "Sin sede")</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(v.IdVehiculo)">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(v.IdVehiculo)">Eliminar</button>
+                </td>
+            </tr>
+        }
     }
-</div>
+    </tbody>
+</table>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
 
 @code {
-    private List<VehicleEntity> vehicles = new();
-    private string? errorMessage;
+    private List<VehicleEntity>? vehicles;
+    private string? message;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        LoadVehicles();
+        await LoadVehicles();
     }
 
-    private void LoadVehicles()
+    private async Task LoadVehicles()
     {
         try
         {
-            errorMessage = null;
-            vehicles = VehicleLog.VehicleList() ?? new List<VehicleEntity>();
+            vehicles = await VehicleLog.VehicleListAsync();
         }
         catch (Exception ex)
         {
-            errorMessage = ex.Message;
+            vehicles ??= new();
+            message = $"Error al cargar los vehículos: {ex.Message}";
         }
     }
 
-    private void NavigateToCreate()
+    private void GoToUpdate(int id)
     {
-        Navigation.NavigateTo("/CreateVehiclePage");
-    }
-
-    private void NavigateToUpdate(int id)
-    {
-        Navigation.NavigateTo($"/UpdateVehiclePage/{id}");
+        Navigation.NavigateTo($"/vehicle/update/{id}");
     }
 
     private async Task Delete(int id)
@@ -98,12 +97,13 @@
 
         try
         {
-            VehicleLog.DeleteVehicle(id);
-            LoadVehicles();
+            await VehicleLog.DeleteVehicleAsync(id);
+            message = "Vehículo eliminado correctamente.";
+            await LoadVehicles();
         }
         catch (Exception ex)
         {
-            errorMessage = $"No se pudo eliminar el vehículo: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el vehículo: {ex.Message}";
         }
     }
 }

@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using ConcesionarioWebApp.Model;
 
 namespace Model;
 
@@ -10,22 +9,22 @@ public class SaleDetailEntity
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id_detalle")]
-    public int id_detalle { get; set; }
-    
-    [Required]
+    public int IdDetalle { get; set; }
+
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una venta.")]
     [Column("id_venta")]
-    public int id_venta { get; set; }
+    public int IdVenta { get; set; }
 
-    // Clave foránea explícita apuntando a SaleEntity
-    [ForeignKey(nameof(id_venta))]
+    [ForeignKey(nameof(IdVenta))]
     public virtual SaleEntity? Venta { get; set; }
 
-    [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un vehículo.")]
     [Column("id_vehiculo")]
-    public int id_vehiculo { get; set; }
+    public int IdVehiculo { get; set; }
 
-    [ForeignKey(nameof(id_vehiculo))]
+    [ForeignKey(nameof(IdVehiculo))]
     public virtual VehicleEntity? Vehiculo { get; set; }
+
+    // Un detalle de venta puede tener garantías
+    public virtual ICollection<WarrantyEntity> Garantias { get; set; } = new List<WarrantyEntity>();
 }

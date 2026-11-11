@@ -1,0 +1,99 @@
+@using Model
+
+@* Campos compartidos por los formularios de crear y actualizar cotización *@
+
+<div class="mb-3">
+    <label class="form-label">Cliente:</label>
+    <InputSelect @bind-Value="Quote.IdCliente" class="form-select">
+        <option value="0">-- Seleccione un cliente --</option>
+        @foreach (var client in Clients)
+        {
+            <option value="@client.IdCliente">@client.Nombre (@client.Cedula)</option>
+        }
+    </InputSelect>
+    <ValidationMessage For="() => Quote.IdCliente" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Vehículo:</label>
+    <InputSelect @bind-Value="Quote.IdVehiculo" @bind-Value:after="OnVehicleChanged" class="form-select">
+        <option value="0">-- Seleccione un vehículo --</option>
+        @foreach (var vehicle in Vehicles)
+        {
+            <option value="@vehicle.IdVehiculo">@vehicle.Marca @vehicle.Modelo - VIN @vehicle.Vin (@vehicle.Precio.ToString("C"))</option>
+        }
+    </InputSelect>
+    <ValidationMessage For="() => Quote.IdVehiculo" />
+    @if (!Vehicles.Any())
+    {
+        <div class="form-text text-warning">No hay vehículos disponibles: todos están vendidos. Registre uno nuevo en <a href="/vehicle/create">Vehículos</a>.</div>
+    }
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Asesor (opcional):</label>
+    <InputSelect @bind-Value="Quote.IdEmpleado" class="form-select">
+        <option value="">-- Sin asesor --</option>
+        @foreach (var employee in Employees)
+        {
+            <option value="@employee.IdEmpleado">@employee.Nombre - @employee.Cargo</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Fecha de la cotización:</label>
+        <InputDate @bind-Value="Quote.Fecha" class="form-control" />
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Válida hasta:</label>
+        <InputDate @bind-Value="Quote.FechaVencimiento" class="form-control" />
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Precio ofrecido:</label>
+    <InputNumber @bind-Value="Quote.PrecioOfrecido" class="form-control" />
+    <div class="form-text">Se completa con el precio del vehículo; puede ajustarlo si hay descuento.</div>
+    <ValidationMessage For="() => Quote.PrecioOfrecido" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Estado:</label>
+    <InputSelect @bind-Value="Quote.Estado" class="form-select">
+        @foreach (var status in Enum.GetValues<QuoteStatus>())
+        {
+            <option value="@status">@status</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Observaciones:</label>
+    <InputTextArea @bind-Value="Quote.Observaciones" class="form-control" rows="3" placeholder="Ej. Incluye matrícula y SOAT" />
+    <ValidationMessage For="() => Quote.Observaciones" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public QuoteEntity Quote { get; set; } = default!;
+
+    [Parameter]
+    public List<ClientEntity> Clients { get; set; } = new();
+
+    [Parameter]
+    public List<VehicleEntity> Vehicles { get; set; } = new();
+
+    [Parameter]
+    public List<EmployeeEntity> Employees { get; set; } = new();
+
+    private void OnVehicleChanged()
+    {
+        var vehicle = Vehicles.FirstOrDefault(v => v.IdVehiculo == Quote.IdVehiculo);
+        if (vehicle != null)
+        {
+            Quote.PrecioOfrecido = vehicle.Precio;
+        }
+    }
+}

@@ -1,7 +1,35 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Inicio</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Concesionario WebApp</h1>
 
-Welcome to your new app.
+<p class="lead">Sistema de gestión del concesionario: inventario por sede, clientes, ventas, pagos, garantías y mantenimientos.</p>
+
+<div class="row g-3 mt-2">
+    @foreach (var (href, title, text) in modules)
+    {
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="@href" class="card h-100 text-decoration-none">
+                <div class="card-body">
+                    <h5 class="card-title">@title</h5>
+                    <p class="card-text text-body-secondary">@text</p>
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly (string Href, string Title, string Text)[] modules =
+    [
+        ("vehicle/list", "Vehículos", "Inventario de vehículos por sede."),
+        ("client/list", "Clientes", "Registro de clientes compradores."),
+        ("quote/list", "Cotizaciones", "Ofertas de precio a clientes antes de la venta."),
+        ("testdrive/list", "Pruebas de manejo", "Agenda de pruebas de manejo por vehículo."),
+        ("sale/list", "Ventas", "Ventas, detalles y vehículos vendidos."),
+        ("pay/list", "Pagos y créditos", "Pagos de cada venta y créditos bancarios."),
+        ("warranty/list", "Posventa", "Garantías y mantenimientos programados."),
+        ("user/list", "Usuarios", "Cuentas de acceso al sistema y sus roles."),
+    ];
+}

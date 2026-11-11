@@ -1,70 +1,34 @@
-﻿using ConcesionarioWebApp.Model;
 using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
+using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de clientes.</summary>
+public class ClientLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<ClientEntity>(dbFactory)
 {
-    public class ClientLog
+    /// <summary>Devuelve todos los clientes.</summary>
+    public Task<List<ClientEntity>> ClientListAsync() => ListAsync(q => q.OrderBy(c => c.Nombre));
+
+    /// <summary>Busca un cliente por su ID. Devuelve null si no existe.</summary>
+    public Task<ClientEntity?> GetClientByIdAsync(int id) => GetByIdAsync(id);
+
+    /// <summary>Registra un cliente.</summary>
+    public Task CreateClientAsync(ClientEntity entity) => CreateAsync(entity);
+
+    /// <summary>Actualiza un cliente.</summary>
+    public Task UpdateClientAsync(ClientEntity entity) => UpdateAsync(entity);
+
+    /// <summary>Elimina un cliente por su ID.</summary>
+    public Task DeleteClientAsync(int id) => DeleteAsync(id);
+
+    protected override void Normalize(ClientEntity entity)
     {
-        /*
-         * Método que permite crear un nuevo cliente en la base de datos.
-         */
-        public static void CreateClient(ClientEntity objClient)
-        {
-            using (var db = new DataContext())
-            {
-                db.Clients.Add(objClient);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que devuelve una lista de todos los clientes existentes en la base de datos.
-         */
-        public static List<ClientEntity> ClientList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.Clients.ToList();
-            }
-        }
-
-        /*
-         * Método que actualiza un cliente existente en la base de datos.
-         */
-        public static void UpdateClient(ClientEntity objClient)
-        {
-            using (var db = new DataContext())
-            {
-                db.Clients.Update(objClient);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que busca un cliente por su ID. Devuelve null si no existe.
-         */
-        public static ClientEntity? GetClientById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.Clients.Find(id);
-            }
-        }
-
-        /*
-         * Método que elimina un cliente por su ID.
-         */
-        public static void DeleteClient(int id)
-        {
-            using (var db = new DataContext())
-            {
-                var entity = db.Clients.Find(id);
-                if (entity != null)
-                {
-                    db.Clients.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
-        }
+        entity.Cedula = entity.Cedula.Trim();
+        entity.Nombre = entity.Nombre.Trim();
+        entity.Telefono = entity.Telefono?.Trim();
+        entity.Correo = entity.Correo?.Trim().ToLowerInvariant();
+        entity.Direccion = entity.Direccion?.Trim();
     }
 }

@@ -2,6 +2,7 @@
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject SaleLog SaleLog
 
 <h3>Gestión de Ventas</h3>
 
@@ -15,8 +16,8 @@
         <th>ID Venta</th>
         <th>Fecha</th>
         <th>Total Pagado</th>
-        <th>ID Cliente</th>
-        <th>ID Empleado</th>
+        <th>Cliente</th>
+        <th>Empleado</th>
         <th>Acciones</th>
     </tr>
     </thead>
@@ -38,16 +39,16 @@
         @foreach (var sale in sales)
         {
             <tr>
-                <td>@sale.id_venta</td>
-                <td>@sale.fecha.ToShortDateString()</td>
-                <td>@sale.total_pagado.ToString("C")</td>
-                <td>@sale.id_cliente</td>
-                <td>@sale.id_empleado</td>
+                <td>@sale.IdVenta</td>
+                <td>@sale.Fecha.ToString("dd/MM/yyyy")</td>
+                <td>@sale.TotalPagado.ToString("C")</td>
+                <td>@(sale.Cliente?.Nombre ?? "Sin cliente")</td>
+                <td>@(sale.Empleado?.Nombre ?? "Sin empleado")</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(sale.id_venta)">
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(sale.IdVenta)">
                         Editar
                     </button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(sale.id_venta)">
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(sale.IdVenta)">
                         Eliminar
                     </button>
                 </td>
@@ -75,7 +76,7 @@
     {
         try
         {
-            sales = await Task.Run(() => SaleLog.SaleList());
+            sales = await SaleLog.SaleListAsync();
         }
         catch (Exception ex)
         {
@@ -93,13 +94,13 @@
 
         try
         {
-            SaleLog.DeleteSale(id);
+            await SaleLog.DeleteSaleAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadSales();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar la venta: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar la venta: {ex.Message}";
         }
     }
 

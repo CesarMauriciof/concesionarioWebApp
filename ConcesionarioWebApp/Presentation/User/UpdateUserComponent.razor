@@ -1,0 +1,80 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject UserLog UserLog
+@inject EmployeeLog EmployeeLog
+
+<h3>Actualizar Usuario (ID: @Id)</h3>
+
+@if (form == null)
+{
+    @if (message == null)
+    {
+        <p>Cargando datos del usuario...</p>
+    }
+}
+else
+{
+    <EditForm Model="form" OnValidSubmit="UpdateUser">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <UserFields Form="form" Employees="employees" />
+
+        <button type="submit" class="btn btn-success">Guardar Cambios</button>
+        <a href="/user/list" class="btn btn-secondary ms-2">Cancelar</a>
+    </EditForm>
+}
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UserFormModel? form;
+    private List<EmployeeEntity> employees = new();
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            employees = await EmployeeLog.EmployeeListAsync();
+            var user = await UserLog.GetUserByIdAsync(Id);
+
+            if (user == null)
+            {
+                message = "No se encontró el usuario especificado.";
+                return;
+            }
+
+            form = UserFormModel.FromEntity(user);
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar el usuario: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateUser()
+    {
+        if (form == null)
+        {
+            return;
+        }
+
+        try
+        {
+            await UserLog.UpdateUserAsync(form.ToEntity(), form.Contrasena);
+            NavManager.NavigateTo("/user/list");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al actualizar el usuario: {ex.Message}";
+        }
+    }
+}

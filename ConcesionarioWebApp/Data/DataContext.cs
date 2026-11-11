@@ -1,63 +1,166 @@
-using ConcesionarioWebApp.Model;
 using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Data
+namespace Data;
+
+/// <summary>
+/// Contexto de EF Core. La cadena de conexión NO se define aquí: se inyecta desde la configuración
+/// (appsettings / user-secrets) al registrar el contexto con <c>AddDbContextFactory</c>.
+/// </summary>
+public class DataContext(DbContextOptions<DataContext> options) : DbContext(options)
 {
-    public class DataContext : DbContext
+    public DbSet<ClientEntity> Clients => Set<ClientEntity>();
+    public DbSet<EmployeeEntity> Employees => Set<EmployeeEntity>();
+    public DbSet<HeadquartersEntity> Headquarters => Set<HeadquartersEntity>();
+    public DbSet<MaintenanceEntity> Maintenances => Set<MaintenanceEntity>();
+    public DbSet<SaleDetailEntity> SaleDetails => Set<SaleDetailEntity>();
+    public DbSet<SaleEntity> Sales => Set<SaleEntity>();
+    public DbSet<VehicleEntity> Vehicles => Set<VehicleEntity>();
+    public DbSet<WarrantyEntity> Warranties => Set<WarrantyEntity>();
+    public DbSet<PayEntity> Pays => Set<PayEntity>();
+    public DbSet<CreditEntity> Credits => Set<CreditEntity>();
+    public DbSet<UserEntity> Users => Set<UserEntity>();
+    public DbSet<QuoteEntity> Quotes => Set<QuoteEntity>();
+    public DbSet<TestDriveEntity> TestDrives => Set<TestDriveEntity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Constructor usado por la capa Logic: la conexión se configura en OnConfiguring
-        public DataContext()
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.HasCharSet("utf8mb4").UseCollation("utf8mb4_0900_ai_ci");
+
+        // Convención de nombres: uq_<tabla>_<columna>, ix_<tabla>_<columna>, fk_<tabla>_<tabla_referenciada>
+
+        modelBuilder.Entity<ClientEntity>(e =>
         {
-        }
+            e.HasIndex(c => c.Cedula).IsUnique().HasDatabaseName("uq_cliente_cedula");
+        });
 
-        // Constructor usado en tiempo de diseño (DataContextFactory / migraciones)
-        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        modelBuilder.Entity<HeadquartersEntity>();
+
+        modelBuilder.Entity<EmployeeEntity>(e =>
         {
-        }
-        public DbSet<ClientEntity> Clients { get; set; }
-        public DbSet<EmployeeEntity> Employees { get; set; }
-        public DbSet<HeadquartersEntity> Headquarters { get; set; }
-        public DbSet<MaintenanceEntity> Maintenances { get; set; }
-        public DbSet<SaleDetailEntity> SaleDetails { get; set; }
-        public DbSet<SaleEntity> Sales { get; set; }
-        public DbSet<VehicleEntity> Vehicles { get; set; }
-        public DbSet<WarrantyEntity> Warranties { get; set; }
-        public DbSet<PayEntity> Pays { get; set; }
-        public DbSet<CreditEntity> Credits { get; set; }
+            e.HasIndex(x => x.Cedula).IsUnique().HasDatabaseName("uq_empleado_cedula");
+            e.HasIndex(x => x.IdSede).HasDatabaseName("ix_empleado_id_sede");
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+            // [Required] del modelo es solo para el formulario: en la BD la FK es opcional
+            e.Property(x => x.IdSede).IsRequired(false);
+            e.HasOne(x => x.Sede).WithMany(s => s.Empleados).HasForeignKey(x => x.IdSede)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_empleado_sede");
+        });
+
+        modelBuilder.Entity<VehicleEntity>(e =>
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseMySql("server=localhost;user=root;password=r00t123;port=3306;database=concesionario",
-                    new MySqlServerVersion(new Version(8, 0, 34)));
-            }
-        }
+            e.HasIndex(x => x.Vin).IsUnique().HasDatabaseName("uq_vehiculo_vin");
+            e.HasIndex(x => x.IdSede).HasDatabaseName("ix_vehiculo_id_sede");
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+            e.Property(x => x.IdSede).IsRequired(false);
+            e.HasOne(x => x.Sede).WithMany(s => s.Vehiculos).HasForeignKey(x => x.IdSede)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_vehiculo_sede");
+        });
+
+        modelBuilder.Entity<SaleEntity>(e =>
         {
-            base.OnModelCreating(modelBuilder);
+            e.HasIndex(x => x.IdCliente).HasDatabaseName("ix_venta_id_cliente");
+            e.HasIndex(x => x.IdEmpleado).HasDatabaseName("ix_venta_id_empleado");
 
-            // venta.id_cliente es la FK de la relación Cliente -> Ventas (evita una columna sombra inexistente)
-            modelBuilder.Entity<ClientEntity>()
-                .HasMany(c => c.venta)
-                .WithOne()
-                .HasForeignKey(s => s.id_cliente);
+            e.Property(x => x.IdCliente).IsRequired(false);
+            e.Property(x => x.IdEmpleado).IsRequired(false);
 
-            // Estas FK admiten NULL en MySQL (ON DELETE SET NULL / datos existentes). [Required] se mantiene
-            // en el modelo solo para validar formularios; aquí se le indica a EF que la columna es opcional.
-            modelBuilder.Entity<EmployeeEntity>().Property(e => e.IdSede).IsRequired(false);
-            modelBuilder.Entity<VehicleEntity>().Property(v => v.IdSede).IsRequired(false);
-            modelBuilder.Entity<SaleEntity>().Property(s => s.id_cliente).IsRequired(false);
-            modelBuilder.Entity<SaleEntity>().Property(s => s.id_empleado).IsRequired(false);
+            e.HasOne(x => x.Cliente).WithMany(c => c.Ventas).HasForeignKey(x => x.IdCliente)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_venta_cliente");
+            e.HasOne(x => x.Empleado).WithMany(emp => emp.Ventas).HasForeignKey(x => x.IdEmpleado)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_venta_empleado");
+        });
 
-            modelBuilder.Entity<ClientEntity>().HasData(
-                new ClientEntity
-                {
-                    Id_Cliente = 001, Cedula = "001", Nombre = "Yeison Anaya", Telefono = "310546891",
-                    Correo = "Yeison@gmail.com", Direccion = "carrera 5 #24-10"
-                });
-        }
+        modelBuilder.Entity<SaleDetailEntity>(e =>
+        {
+            e.HasIndex(x => x.IdVenta).HasDatabaseName("ix_detalle_venta_id_venta");
+            e.HasIndex(x => x.IdVehiculo).HasDatabaseName("ix_detalle_venta_id_vehiculo");
+
+            // Al eliminar una venta se eliminan sus detalles
+            e.HasOne(x => x.Venta).WithMany(v => v.DetallesVenta).HasForeignKey(x => x.IdVenta)
+                .OnDelete(DeleteBehavior.Cascade).HasConstraintName("fk_detalle_venta_venta");
+            e.HasOne(x => x.Vehiculo).WithMany(v => v.DetallesVenta).HasForeignKey(x => x.IdVehiculo)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_detalle_venta_vehiculo");
+        });
+
+        modelBuilder.Entity<PayEntity>(e =>
+        {
+            e.HasIndex(x => x.IdVenta).HasDatabaseName("ix_pago_id_venta");
+            e.HasOne(x => x.Venta).WithMany(v => v.Pagos).HasForeignKey(x => x.IdVenta)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_pago_venta");
+        });
+
+        modelBuilder.Entity<CreditEntity>(e =>
+        {
+            e.HasIndex(x => x.IdPago).HasDatabaseName("ix_credito_id_pago");
+            e.HasOne(x => x.Pago).WithMany(p => p.Creditos).HasForeignKey(x => x.IdPago)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_credito_pago");
+        });
+
+        modelBuilder.Entity<WarrantyEntity>(e =>
+        {
+            e.HasIndex(x => x.IdDetalle).HasDatabaseName("ix_garantia_id_detalle");
+            e.HasOne(x => x.DetalleVenta).WithMany(d => d.Garantias).HasForeignKey(x => x.IdDetalle)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_garantia_detalle_venta");
+        });
+
+        modelBuilder.Entity<MaintenanceEntity>(e =>
+        {
+            e.HasIndex(x => x.IdGarantia).HasDatabaseName("ix_mantenimiento_id_garantia");
+            e.HasOne(x => x.Garantia).WithMany(g => g.Mantenimientos).HasForeignKey(x => x.IdGarantia)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_mantenimiento_garantia");
+        });
+
+        modelBuilder.Entity<UserEntity>(e =>
+        {
+            e.HasIndex(x => x.NombreUsuario).IsUnique().HasDatabaseName("uq_usuario_nombre_usuario");
+            e.HasIndex(x => x.Correo).IsUnique().HasDatabaseName("uq_usuario_correo");
+            // Un empleado tiene como máximo un usuario (MySQL permite varios NULL en un índice único)
+            e.HasIndex(x => x.IdEmpleado).IsUnique().HasDatabaseName("uq_usuario_id_empleado");
+
+            e.Property(x => x.ContrasenaHash).IsRequired();
+            // El rol se guarda como texto ("Administrador", "Vendedor"...) para que la BD sea legible
+            e.Property(x => x.Rol).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.FechaCreacion).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Si se elimina el empleado, el usuario se conserva sin vínculo
+            e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_usuario_empleado");
+        });
+
+        modelBuilder.Entity<QuoteEntity>(e =>
+        {
+            e.HasIndex(x => x.IdCliente).HasDatabaseName("ix_cotizacion_id_cliente");
+            e.HasIndex(x => x.IdVehiculo).HasDatabaseName("ix_cotizacion_id_vehiculo");
+            e.HasIndex(x => x.IdEmpleado).HasDatabaseName("ix_cotizacion_id_empleado");
+
+            e.Property(x => x.Estado).HasConversion<string>().HasMaxLength(20);
+
+            e.HasOne(x => x.Cliente).WithMany().HasForeignKey(x => x.IdCliente)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_cotizacion_cliente");
+            e.HasOne(x => x.Vehiculo).WithMany().HasForeignKey(x => x.IdVehiculo)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_cotizacion_vehiculo");
+            e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_cotizacion_empleado");
+        });
+
+        modelBuilder.Entity<TestDriveEntity>(e =>
+        {
+            e.HasIndex(x => x.IdCliente).HasDatabaseName("ix_prueba_manejo_id_cliente");
+            // Índice compuesto: acelera la validación de "vehículo ya agendado a esa hora"
+            e.HasIndex(x => new { x.IdVehiculo, x.FechaHora }).HasDatabaseName("ix_prueba_manejo_vehiculo_fecha");
+            e.HasIndex(x => x.IdEmpleado).HasDatabaseName("ix_prueba_manejo_id_empleado");
+
+            e.Property(x => x.Estado).HasConversion<string>().HasMaxLength(20);
+
+            e.HasOne(x => x.Cliente).WithMany().HasForeignKey(x => x.IdCliente)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_prueba_manejo_cliente");
+            e.HasOne(x => x.Vehiculo).WithMany().HasForeignKey(x => x.IdVehiculo)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_prueba_manejo_vehiculo");
+            e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
+                .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_prueba_manejo_empleado");
+        });
     }
 }

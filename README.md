@@ -4,13 +4,13 @@
 
 **Concesionario WebApp** es un sistema de información web diseñado para la gestión integral de un concesionario de vehículos multisede. La plataforma permite administrar el inventario de vehículos por sede, la gestión de clientes y empleados, el flujo completo de ventas, los pagos (incluyendo créditos bancarios), así como el seguimiento de garantías y mantenimientos programados.
 
-El proyecto está desarrollado en **C# con .NET Core**, estructurado bajo una **arquitectura en capas** (*Presentation*, *Logic*, *Model*, *Data*) y utiliza **MySQL** como motor de base de datos relacional.
+El proyecto está desarrollado en **C# con .NET 9 (Blazor Server)**, estructurado bajo una **arquitectura en capas** (*Presentation*, *Logic*, *Model*, *Data*) y utiliza **MySQL** como motor de base de datos relacional.
 
 ## Requisitos Previos
 
 Antes de comenzar, asegúrate de contar con los siguientes elementos instalados en tu entorno de desarrollo:
 
-* **.NET SDK** (versión 6.0, 7.0 o 8.0)
+* **.NET SDK 9.0** (definido en `global.json`)
 * **JetBrains Rider** (o Visual Studio / VS Code)
 * **MySQL Server** (v8.0 o superior) y **MySQL Workbench**
 * **Git** instalado en el sistema
@@ -18,9 +18,10 @@ Antes de comenzar, asegúrate de contar con los siguientes elementos instalados 
 ## Tecnologías Utilizadas
 
 * **Lenguaje:** C#
-* **Framework:** .NET Core / Entity Framework Core
+* **Framework:** .NET 9, Blazor Server y Entity Framework Core 9
 * **Base de Datos:** MySQL
-* **Conector de BD:** `Pomelo.EntityFrameworkCore.MySql` o `MySql.Data`
+* **Conector de BD:** `Pomelo.EntityFrameworkCore.MySql` 9.0
+* **Estilos:** Bootstrap 5.3 (incluido en `Presentation/wwwroot/lib`)
 * **IDE Recomendado:** JetBrains Rider
 * **Control de Versiones:** Git & Bitbucket (metodología **Git Flow**)
 * **Gestión de Tareas:** Jira
@@ -38,7 +39,12 @@ El sistema está modelado a partir de las siguientes entidades principales:
 7. **`pago`**: Registro de pagos realizados a una venta (`id_pago`, `id_venta`, `monto`, `fecha_pago`, `metodo_pago`).
 8. **`credito`**: Información sobre créditos bancarios asociados a un pago (`id_credito`, `id_pago`, `entidad_bancaria`, `monto_aprobado`, `numero_cuotas`).
 9. **`garantia`**: Garantías asociadas a un detalle de venta (`id_garantia`, `id_detalle`, `fecha_inicio`, `condiciones`).
-10. **`mantenimiento`**: Servicios posventa y mantenimientos asociados a una garantía (`id_mantenimiento`, `id_garantia`, `kilometraje`, `año_mantenimiento`, `servicios_realizados`, `fecha_programada`).
+10. **`mantenimiento`**: Servicios posventa y mantenimientos asociados a una garantía (`id_mantenimiento`, `id_garantia`, `kilometraje`, `anio_mantenimiento`, `servicios_realizados`, `fecha_programada`).
+11. **`usuario`**: Cuentas de acceso al sistema (`id_usuario`, `nombre_usuario`, `correo`, `contrasena_hash`, `rol`, `activo`, `fecha_creacion`, `id_empleado`). La contraseña nunca se guarda en texto plano: solo su hash (PBKDF2 con sal, `PasswordHasher` de ASP.NET Core Identity).
+12. **`cotizacion`**: Oferta de precio a un cliente por un vehículo antes de la venta (`id_cotizacion`, `fecha`, `fecha_vencimiento`, `precio_ofrecido`, `estado`, `observaciones`, `id_cliente`, `id_vehiculo`, `id_empleado`). Estados: Pendiente, Aceptada, Rechazada, Vencida. No se puede cotizar un vehículo ya vendido.
+13. **`prueba_manejo`**: Cita de un cliente para probar un vehículo (`id_prueba`, `fecha_hora`, `estado`, `observaciones`, `id_cliente`, `id_vehiculo`, `id_empleado`). Estados: Programada, Realizada, Cancelada. Cada prueba reserva el vehículo 1 hora y no se permiten cruces de horario.
+
+**Convención de nombres en la BD:** tablas y columnas en `snake_case` sin tildes ni `ñ`; índices únicos `uq_<tabla>_<columna>`, índices `ix_<tabla>_<columna>` y llaves foráneas `fk_<tabla>_<tabla_referenciada>`. En C# las propiedades usan `PascalCase` y se mapean con `[Column("...")]`.
 
 ## Estructura del Proyecto (Arquitectura en Capas)
 
@@ -46,11 +52,14 @@ La solución `ConcesionarioWebApp` sigue una separación de responsabilidades cl
 
 ```text
 ConcesionarioWebApp/
-├── Concesionario.Presentation/   # Interfaz de usuario, vistas y controladores web
-├── Concesionario.Logic/          # Lógica de negocio y reglas de validación
-├── Concesionario.Model/          # Entidades de dominio (Cliente, Vehiculo, Venta, etc.) y DTOs
-└── Concesionario.Data/           # Persistencia de datos, DataContext y migraciones EF Core
+├── Model/          # Entidades (ClientEntity, VehicleEntity, UserEntity...) con DataAnnotations
+├── Data/           # DataContext (EF Core), migraciones y scripts SQL
+├── Logic/          # Clases *Log con la lógica de negocio, BaseLog (CRUD común) y registro de DI
+└── Presentation/   # Blazor Server: páginas (Pages/), componentes por módulo y Program.cs
 ```
+
+Las rutas de la interfaz siguen la convención `/<modulo>/list`, `/<modulo>/create` y `/<modulo>/update/{id}`
+(por ejemplo `/vehicle/list`, `/user/create`).
 
 ## Instalación y Configuración
 
@@ -58,38 +67,50 @@ ConcesionarioWebApp/
 
 ```bash
 git clone git@bitbucket.org:1152471325/concesionariowebapp.git
+cd concesionariowebapp/ConcesionarioWebApp
+dotnet tool restore     # instala dotnet-ef 9.0 (definido en .config/dotnet-tools.json)
 ```
 
-### 2. Configurar la cadena de conexión
+### 2. Configurar la cadena de conexión (sin subir la contraseña)
 
-Edita el archivo `appsettings.json` en el proyecto `Concesionario.Presentation`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=concesionario_db;User=root;Password=tu_contraseña;"
-  }
-}
-```
-
-### 3. Restaurar dependencias y paquetes
+`Presentation/appsettings.json` trae la cadena **sin contraseña real**. Cada integrante guarda la suya con
+*user-secrets*, que se almacena fuera del repositorio:
 
 ```bash
-dotnet restore
+dotnet user-secrets set "ConnectionStrings:Concesionario" "Server=localhost;Port=3306;Database=concesionario;User=root;Password=TU_CONTRASEÑA;" --project Presentation
 ```
 
-### 4. Ejecutar las migraciones de Base de Datos
+En producción se usa la variable de entorno `ConnectionStrings__Concesionario`.
 
-Ejecuta las migraciones de Entity Framework Core para construir las tablas en MySQL:
+### 3. Crear o actualizar la base de datos
+
+**Opción A – BD nueva (vacía):** EF Core crea todas las tablas:
 
 ```bash
-dotnet ef database update --project Concesionario.Data --startup-project Concesionario.Presentation
+dotnet ef database update --project Data --startup-project Presentation
 ```
 
-### 5. Iniciar la aplicación
+**Opción B – BD existente con datos (creada desde MySQL Workbench):**
+
+1. Haga un respaldo: `mysqldump -u root -p concesionario > respaldo.sql`
+2. Ejecute en orden `Data/Scripts/01_alinear_esquema.sql` y `Data/Scripts/02_ajustar_esquema_y_registrar_migracion.sql`
+   (el script 02 muestra primero una verificación: todas las filas deben indicar `0` nulos).
+3. Aplique las migraciones pendientes (crea la tabla `usuario`):
 
 ```bash
-dotnet run --project Concesionario.Presentation
+dotnet ef database update --project Data --startup-project Presentation
+```
+
+Para agregar cambios al modelo en el futuro:
+
+```bash
+dotnet ef migrations add NombreDelCambio --project Data --startup-project Presentation
+```
+
+### 4. Iniciar la aplicación
+
+```bash
+dotnet run --project Presentation
 ```
 
 ## Ejemplos de Funcionamiento

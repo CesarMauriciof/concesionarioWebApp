@@ -1,0 +1,11 @@
+@page "/quote/update/{Id:int}"
+@using Presentation.Quote
+
+<PageTitle>Editar cotización</PageTitle>
+
+<UpdateQuoteComponent Id="Id" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+}

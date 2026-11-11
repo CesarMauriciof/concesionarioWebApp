@@ -1,6 +1,9 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject ClientLog ClientLog
+@inject EmployeeLog EmployeeLog
+@inject SaleLog SaleLog
 
 <h3>Actualizar Venta (ID: @Id)</h3>
 
@@ -19,28 +22,28 @@ else
 
         <div class="mb-3">
             <label class="form-label">Fecha de Venta:</label>
-            <InputDate @bind-Value="objSale.fecha" class="form-control" />
+            <InputDate @bind-Value="objSale.Fecha" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Total Pagado:</label>
-            <InputNumber @bind-Value="objSale.total_pagado" class="form-control" />
+            <InputNumber @bind-Value="objSale.TotalPagado" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Cliente:</label>
-            <InputSelect @bind-Value="objSale.id_cliente" class="form-control">
+            <InputSelect @bind-Value="objSale.IdCliente" class="form-control">
                 <option value="0">-- Seleccione un cliente --</option>
                 @foreach (var client in clients)
                 {
-                    <option value="@client.Id_Cliente">@client.Nombre (@client.Cedula)</option>
+                    <option value="@client.IdCliente">@client.Nombre (@client.Cedula)</option>
                 }
             </InputSelect>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Empleado:</label>
-            <InputSelect @bind-Value="objSale.id_empleado" class="form-control">
+            <InputSelect @bind-Value="objSale.IdEmpleado" class="form-control">
                 <option value="0">-- Seleccione un empleado --</option>
                 @foreach (var employee in employees)
                 {
@@ -72,9 +75,9 @@ else
     {
         try
         {
-            clients = await Task.Run(() => ClientLog.ClientList());
-            employees = await Task.Run(() => EmployeeLog.EmployeeList());
-            objSale = await Task.Run(() => SaleLog.GetSaleById(Id));
+            clients = await ClientLog.ClientListAsync();
+            employees = await EmployeeLog.EmployeeListAsync();
+            objSale = await SaleLog.GetSaleByIdAsync(Id);
 
             if (objSale == null)
             {
@@ -87,20 +90,20 @@ else
         }
     }
 
-    private void UpdateSale()
+    private async Task UpdateSale()
     {
         try
         {
             if (objSale != null)
             {
-                SaleLog.UpdateSale(objSale);
+                await SaleLog.UpdateSaleAsync(objSale);
                 message = "¡Venta actualizada con éxito!";
                 NavManager.NavigateTo("/sale/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

@@ -2,6 +2,7 @@
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject HeadquartersLog HeadquartersLog
 
 <h3>Gestión de Sedes</h3>
 
@@ -73,7 +74,7 @@
     {
         try
         {
-            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+            headquartersList = await HeadquartersLog.HeadquartersListAsync();
         }
         catch (Exception ex)
         {
@@ -91,13 +92,13 @@
 
         try
         {
-            HeadquartersLog.DeleteHeadquarters(id);
+            await HeadquartersLog.DeleteHeadquartersAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadHeadquartersList();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar la sede: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar la sede: {ex.Message}";
         }
     }
 

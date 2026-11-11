@@ -2,6 +2,7 @@
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject EmployeeLog EmployeeLog
 
 <h3>Gestión de Empleados</h3>
 
@@ -17,7 +18,7 @@
         <th>Nombre</th>
         <th>Cargo</th>
         <th>Salario</th>
-        <th>ID Sede</th>
+        <th>Sede</th>
         <th>Acciones</th>
     </tr>
     </thead>
@@ -44,7 +45,7 @@
                 <td>@emp.Nombre</td>
                 <td>@emp.Cargo</td>
                 <td>@emp.Salario.ToString("C")</td>
-                <td>@emp.IdSede</td>
+                <td>@(emp.Sede?.NombreSede ?? "Sin sede")</td>
                 <td>
                     <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(emp.IdEmpleado)">
                         Editar
@@ -77,7 +78,7 @@
     {
         try
         {
-            employees = await Task.Run(() => EmployeeLog.EmployeeList());
+            employees = await EmployeeLog.EmployeeListAsync();
         }
         catch (Exception ex)
         {
@@ -95,13 +96,13 @@
 
         try
         {
-            EmployeeLog.DeleteEmployee(id);
+            await EmployeeLog.DeleteEmployeeAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadEmployees();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar el empleado: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el empleado: {ex.Message}";
         }
     }
 

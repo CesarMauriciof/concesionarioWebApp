@@ -1,0 +1,11 @@
+@page "/user/update/{Id:int}"
+@using Presentation.User
+
+<PageTitle>Editar usuario</PageTitle>
+
+<UpdateUserComponent Id="Id" />
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+}

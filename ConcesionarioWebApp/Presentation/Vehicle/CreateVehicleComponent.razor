@@ -1,7 +1,8 @@
-@using ConcesionarioWebApp.Model
 @using Model
 @using Logic
 @inject NavigationManager Navigation
+@inject HeadquartersLog HeadquartersLog
+@inject VehicleLog VehicleLog
 
 <h3>Registrar Nuevo Vehículo</h3>
 
@@ -44,7 +45,7 @@
     </div>
 
     <button type="submit" class="btn btn-success">Guardar</button>
-    <a href="/ListVehiclePage" class="btn btn-secondary ms-2">Cancelar</a>
+    <a href="/vehicle/list" class="btn btn-secondary ms-2">Cancelar</a>
 </EditForm>
 
 @if (message != null)
@@ -61,7 +62,7 @@
     {
         try
         {
-            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
+            headquartersList = await HeadquartersLog.HeadquartersListAsync();
         }
         catch (Exception ex)
         {
@@ -69,16 +70,16 @@
         }
     }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         try
         {
-            VehicleLog.CreateVehicle(vehicle);
-            Navigation.NavigateTo("/ListVehiclePage");
+            await VehicleLog.CreateVehicleAsync(vehicle);
+            Navigation.NavigateTo("/vehicle/list");
         }
         catch (Exception ex)
         {
-            message = $"Error al registrar el vehículo: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al registrar el vehículo: {ex.Message}";
         }
     }
 }

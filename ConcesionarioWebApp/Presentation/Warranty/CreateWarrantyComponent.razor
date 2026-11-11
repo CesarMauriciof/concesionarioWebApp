@@ -1,6 +1,8 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject SaleDetailLog SaleDetailLog
+@inject WarrantyLog WarrantyLog
 
 <h3>Registrar Garantía</h3>
 
@@ -10,14 +12,14 @@
 
     <div class="mb-3">
         <label class="form-label">Detalle de Venta:</label>
-        <InputSelect @bind-Value="objWarranty.id_detalle" class="form-control">
+        <InputSelect @bind-Value="objWarranty.IdDetalle" class="form-control">
             <option value="0">-- Seleccione un Detalle de Venta --</option>
             @if (saleDetails != null)
             {
                 @foreach (var detail in saleDetails)
                 {
-                    <option value="@detail.id_detalle">
-                        Detalle #@detail.id_detalle - Venta #@detail.id_venta - Vehículo #@detail.id_vehiculo
+                    <option value="@detail.IdDetalle">
+                        Detalle #@detail.IdDetalle - Venta #@detail.IdVenta - Vehículo #@detail.IdVehiculo
                     </option>
                 }
             }
@@ -26,12 +28,12 @@
 
     <div class="mb-3">
         <label class="form-label">Fecha de Inicio:</label>
-        <InputDate @bind-Value="objWarranty.fecha_inicio" class="form-control" />
+        <InputDate @bind-Value="objWarranty.FechaInicio" class="form-control" />
     </div>
 
     <div class="mb-3">
         <label class="form-label">Condiciones:</label>
-        <InputTextArea @bind-Value="objWarranty.condiciones" class="form-control" placeholder="Ej. Cubre motor y transmisión por 3 años" />
+        <InputTextArea @bind-Value="objWarranty.Condiciones" class="form-control" placeholder="Ej. Cubre motor y transmisión por 3 años" />
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar Garantía</button>
@@ -44,7 +46,7 @@
 }
 
 @code {
-    WarrantyEntity objWarranty = new WarrantyEntity { fecha_inicio = DateTime.Today };
+    WarrantyEntity objWarranty = new WarrantyEntity { FechaInicio = DateTime.Today };
     private string? successMessage;
     List<SaleDetailEntity> saleDetails = new List<SaleDetailEntity>();
 
@@ -53,7 +55,7 @@
         try
         {
             // Se cargan los detalles de venta para asociar la garantía al vehículo vendido
-            saleDetails = await Task.Run(() => SaleDetailLog.SaleDetailList());
+            saleDetails = await SaleDetailLog.SaleDetailListAsync();
         }
         catch (Exception ex)
         {
@@ -61,18 +63,18 @@
         }
     }
 
-    private void SaveWarranty()
+    private async Task SaveWarranty()
     {
         try
         {
-            WarrantyLog.CreateWarranty(objWarranty);
-            successMessage = $"¡La garantía para el detalle #{objWarranty.id_detalle} se registró exitosamente!";
-            objWarranty = new WarrantyEntity { fecha_inicio = DateTime.Today };
+            await WarrantyLog.CreateWarrantyAsync(objWarranty);
+            successMessage = $"¡La garantía para el detalle #{objWarranty.IdDetalle} se registró exitosamente!";
+            objWarranty = new WarrantyEntity { FechaInicio = DateTime.Today };
             NavManager.NavigateTo("/warranty/list");
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar la garantía: {ex.InnerException?.Message ?? ex.Message}";
+            successMessage = $"Error al registrar la garantía: {ex.Message}";
         }
     }
 }

@@ -1,7 +1,8 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject CreditLog CreditLog
 
 <h3>Historial de Créditos Bancarios</h3>
 
@@ -38,16 +39,16 @@
         @foreach (var credit in credits)
         {
             <tr>
-                <td>@credit.id_credito</td>
-                <td>@credit.id_pago</td>
-                <td>@credit.entidad_bancaria</td>
-                <td>@credit.monto_aprobado.ToString("C")</td>
-                <td>@credit.numero_cuotas</td>
+                <td>@credit.IdCredito</td>
+                <td>@credit.IdPago</td>
+                <td>@credit.EntidadBancaria</td>
+                <td>@credit.MontoAprobado.ToString("C")</td>
+                <td>@credit.NumeroCuotas</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(credit.id_credito)">
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(credit.IdCredito)">
                         Editar
                     </button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(credit.id_credito)">
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(credit.IdCredito)">
                         Eliminar
                     </button>
                 </td>
@@ -75,7 +76,7 @@
     {
         try
         {
-            credits = await Task.Run(() => CreditLog.CreditList());
+            credits = await CreditLog.CreditListAsync();
         }
         catch (Exception ex)
         {
@@ -93,13 +94,13 @@
 
         try
         {
-            CreditLog.DeleteCredit(id);
+            await CreditLog.DeleteCreditAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadCredits();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar el crédito: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el crédito: {ex.Message}";
         }
     }
 

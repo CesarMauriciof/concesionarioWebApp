@@ -1,0 +1,118 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject TestDriveLog TestDriveLog
+
+<h3>Pruebas de Manejo</h3>
+
+<div class="mb-3">
+    <a href="/testdrive/create" class="btn btn-primary">Agendar Prueba de Manejo</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Fecha y hora</th>
+        <th>Cliente</th>
+        <th>Vehículo</th>
+        <th>Asesor</th>
+        <th>Estado</th>
+        <th>Observaciones</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (testDrives == null)
+    {
+        <tr>
+            <td colspan="8">Cargando pruebas de manejo...</td>
+        </tr>
+    }
+    else if (!testDrives.Any())
+    {
+        <tr>
+            <td colspan="8">No hay pruebas de manejo registradas.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var td in testDrives)
+        {
+            <tr>
+                <td>@td.IdPrueba</td>
+                <td>@td.FechaHora.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@td.Cliente?.Nombre</td>
+                <td>@td.Vehiculo?.Marca @td.Vehiculo?.Modelo</td>
+                <td>@(td.Empleado?.Nombre ?? "—")</td>
+                <td><span class="badge @BadgeClass(td.Estado)">@td.Estado</span></td>
+                <td>@td.Observaciones</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(td.IdPrueba)">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(td.IdPrueba)">Eliminar</button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private List<TestDriveEntity>? testDrives;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTestDrives();
+    }
+
+    private async Task LoadTestDrives()
+    {
+        try
+        {
+            testDrives = await TestDriveLog.TestDriveListAsync();
+        }
+        catch (Exception ex)
+        {
+            testDrives ??= new();
+            message = $"Error al cargar las pruebas de manejo: {ex.Message}";
+        }
+    }
+
+    private static string BadgeClass(TestDriveStatus status) => status switch
+    {
+        TestDriveStatus.Realizada => "bg-success",
+        TestDriveStatus.Cancelada => "bg-secondary",
+        _ => "bg-primary"
+    };
+
+    private async Task Delete(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar la prueba de manejo #{id}?"))
+        {
+            return;
+        }
+
+        try
+        {
+            await TestDriveLog.DeleteTestDriveAsync(id);
+            message = "Prueba de manejo eliminada correctamente.";
+            await LoadTestDrives();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar la prueba de manejo: {ex.Message}";
+        }
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/testdrive/update/{id}");
+    }
+}

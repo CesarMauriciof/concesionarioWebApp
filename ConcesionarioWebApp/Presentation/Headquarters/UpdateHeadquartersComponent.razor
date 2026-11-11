@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject HeadquartersLog HeadquartersLog
 
 <h3>Actualizar Sede ID: @Id</h3>
 
@@ -53,7 +54,7 @@ else
     {
         try
         {
-            objHeadquarters = await Task.Run(() => HeadquartersLog.GetHeadquartersById(Id));
+            objHeadquarters = await HeadquartersLog.GetHeadquartersByIdAsync(Id);
 
             if (objHeadquarters == null)
             {
@@ -66,20 +67,20 @@ else
         }
     }
 
-    private void UpdateHeadquarters()
+    private async Task UpdateHeadquarters()
     {
         try
         {
             if (objHeadquarters != null)
             {
-                HeadquartersLog.UpdateHeadquarters(objHeadquarters);
+                await HeadquartersLog.UpdateHeadquartersAsync(objHeadquarters);
                 message = "¡Sede actualizada con éxito!";
                 NavManager.NavigateTo("/headquarters/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 
