@@ -1,69 +1,25 @@
-﻿using Data;
+using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace Logic;
 
-public class PayLog
+/// <summary>Lógica de negocio de pagos.</summary>
+public class PayLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<PayEntity>(dbFactory)
 {
-    /*
-     * Método que permite crear una nueva venta en la base de datos.
-     */
-    public static void CreatePay(PayEntity objPay)
-    {
-        using (var db = new DataContext())
-        {
-            db.Pays.Add(objPay);
-            db.SaveChanges();
-        }
-    }
+    /// <summary>Devuelve todos los pagos.</summary>
+    public Task<List<PayEntity>> PayListAsync() => ListAsync(q => q.OrderByDescending(p => p.FechaPago));
 
-    /*
-     * Método que devuelve una lista de todas las ventas existentes en la base de datos.
-     */
-    public static List<PayEntity> PayList()
-    {
-        using (var db = new DataContext())
-        {
-            return db.Pays.ToList();
-        }
-    }
+    /// <summary>Busca un pago por su ID. Devuelve null si no existe.</summary>
+    public Task<PayEntity?> GetPayByIdAsync(int id) => GetByIdAsync(id);
 
-    /*
-     * Método que actualiza una venta existente en la base de datos.
-     */
-    public static void UpdatePay(PayEntity objPay)
-    {
-        using (var db = new DataContext())
-        {
-            db.Pays.Update(objPay);
-            db.SaveChanges();
-        }
-    }
+    /// <summary>Registra un pago.</summary>
+    public Task CreatePayAsync(PayEntity entity) => CreateAsync(entity);
 
-    /*
-     * Método que busca un pago por su ID. Devuelve null si no existe.
-     */
-    public static PayEntity? GetPayById(int id)
-    {
-        using (var db = new DataContext())
-        {
-            return db.Pays.Find(id);
-        }
-    }
+    /// <summary>Actualiza un pago.</summary>
+    public Task UpdatePayAsync(PayEntity entity) => UpdateAsync(entity);
 
-    /*
-     * Método que elimina un pago por su ID.
-     */
-    public static void DeletePay(int id)
-    {
-        using (var db = new DataContext())
-        {
-            var entity = db.Pays.Find(id);
-            if (entity != null)
-            {
-                db.Pays.Remove(entity);
-                db.SaveChanges();
-            }
-        }
-    }
+    /// <summary>Elimina un pago por su ID.</summary>
+    public Task DeletePayAsync(int id) => DeleteAsync(id);
 }

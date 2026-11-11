@@ -8,28 +8,31 @@ public class MaintenanceEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int id_mantenimiento { get; set; }
+    [Column("id_mantenimiento")]
+    public int IdMantenimiento { get; set; }
 
-    [Required]
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar una garantía.")]
-    public int id_garantia { get; set; }
+    [Column("id_garantia")]
+    public int IdGarantia { get; set; }
 
-    // Relación Muchos a Uno: Un Mantenimiento pertenece a una Garantía
-    [ForeignKey(nameof(id_garantia))]
-    [InverseProperty(nameof(WarrantyEntity.Mantenimientos))]
+    // Un mantenimiento pertenece a una garantía
+    [ForeignKey(nameof(IdGarantia))]
     public virtual WarrantyEntity? Garantia { get; set; }
 
-    [Required]
-    public int kilometraje { get; set; }
+    [Range(0, int.MaxValue, ErrorMessage = "El kilometraje no puede ser negativo.")]
+    [Column("kilometraje")]
+    public int Kilometraje { get; set; }
 
-    [Required]
-    [Column("año_mantenimiento")]
-    public int año_mantenimiento { get; set; }
+    // Antes se llamaba "año_mantenimiento": se evita la "ñ" en identificadores de la BD
+    [Range(1900, 2100, ErrorMessage = "El año del mantenimiento no es válido.")]
+    [Column("anio_mantenimiento")]
+    public int AnioMantenimiento { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "Debe indicar los servicios realizados.")]
     [StringLength(200)]
-    public string servicios_realizados { get; set; } = string.Empty;
+    [Column("servicios_realizados")]
+    public string ServiciosRealizados { get; set; } = string.Empty;
 
-    [Required]
-    public DateTime fecha_programada { get; set; }
+    [Column("fecha_programada", TypeName = "date")]
+    public DateTime FechaProgramada { get; set; }
 }

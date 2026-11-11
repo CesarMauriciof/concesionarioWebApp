@@ -1,6 +1,7 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject HeadquartersLog HeadquartersLog
 
 <h3>Registrar Nueva Sede</h3>
 
@@ -36,18 +37,18 @@
     private HeadquartersEntity objHeadquarters = new HeadquartersEntity();
     private string? message;
 
-    private void SaveHeadquarters()
+    private async Task SaveHeadquarters()
     {
         try
         {
-            HeadquartersLog.CreateHeadquarters(objHeadquarters);
+            await HeadquartersLog.CreateHeadquartersAsync(objHeadquarters);
             message = "¡Sede guardada con éxito!";
             objHeadquarters = new HeadquartersEntity();
             NavManager.NavigateTo("/headquarters/list");
         }
         catch (Exception ex)
         {
-            message = $"Error al guardar la sede: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al guardar la sede: {ex.Message}";
         }
     }
 

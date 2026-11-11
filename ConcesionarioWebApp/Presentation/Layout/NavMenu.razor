@@ -1,7 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Presentation</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <a class="navbar-brand" href="">Concesionario</a>
+        <button title="Menú de navegación" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
     </div>
@@ -11,90 +11,44 @@
     <nav class="nav flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Inicio
             </NavLink>
         </div>
 
-        <!-- Sección de Clientes -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/ListClientPage">
-                <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Clientes
-            </NavLink>
-        </div>
-
-        <!-- Sección de Vehículos -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/ListVehiclePage">
-                <span class="bi bi-car-front-fill-nav-menu" aria-hidden="true"></span> Vehículos
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/pay/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Pagos
-            </NavLink>
-        </div>
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/credit/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Créditos
-            </NavLink>
-        </div>
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/sale/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Ventas
-            </NavLink>
-        </div>
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/saledetail/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Detalle Venta
-            </NavLink>
-        </div>
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/employee/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Empleados
-            </NavLink>
-        </div>
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/headquarters/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Sedes
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/warranty/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Garantías
-            </NavLink>
-        </div>
-        
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/maintenance/list">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Mantenimientos
-            </NavLink>
-        </div>
+        @foreach (var item in menuItems)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@item.Href">
+                    <span class="bi @item.Icon" aria-hidden="true"></span> @item.Text
+                </NavLink>
+            </div>
+        }
     </nav>
+</div>
 
 @code {
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    // Las rutas siguen la convención /<modulo>/list | create | update/{id}
+    private readonly (string Href, string Icon, string Text)[] menuItems =
+    [
+        ("client/list", "bi-person-fill-nav-menu", "Clientes"),
+        ("vehicle/list", "bi-car-front-fill-nav-menu", "Vehículos"),
+        ("sale/list", "bi-receipt-nav-menu", "Ventas"),
+        ("saledetail/list", "bi-card-list-nav-menu", "Detalle Venta"),
+        ("pay/list", "bi-cash-coin-nav-menu", "Pagos"),
+        ("credit/list", "bi-credit-card-nav-menu", "Créditos"),
+        ("warranty/list", "bi-shield-check-nav-menu", "Garantías"),
+        ("maintenance/list", "bi-tools-nav-menu", "Mantenimientos"),
+        ("employee/list", "bi-people-fill-nav-menu", "Empleados"),
+        ("headquarters/list", "bi-building-nav-menu", "Sedes"),
+        ("user/list", "bi-person-lock-nav-menu", "Usuarios"),
+    ];
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
 }
-</div>

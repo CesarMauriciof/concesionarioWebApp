@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Model;
+
+namespace Model;
 
 [Table("cliente")]
 public class ClientEntity
@@ -8,19 +9,20 @@ public class ClientEntity
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id_cliente")]
-    public int Id_Cliente { get; set; }
+    public int IdCliente { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "La cédula es obligatoria.")]
     [StringLength(15)]
     [Column("cedula")]
     public string Cedula { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "El nombre es obligatorio.")]
     [StringLength(100)]
     [Column("nombre")]
     public string Nombre { get; set; } = string.Empty;
 
     [StringLength(20)]
+    [Phone(ErrorMessage = "El teléfono no tiene un formato válido.")]
     [Column("telefono")]
     public string? Telefono { get; set; }
 
@@ -33,7 +35,6 @@ public class ClientEntity
     [Column("direccion")]
     public string? Direccion { get; set; }
 
-    // Relación Uno a Muchos: Un cliente tiene muchas ventas (FK venta.id_cliente, configurada en DataContext)
-    public ICollection<SaleEntity> venta { get; set; } = new List<SaleEntity>();
-
+    // Un cliente tiene muchas ventas
+    public virtual ICollection<SaleEntity> Ventas { get; set; } = new List<SaleEntity>();
 }

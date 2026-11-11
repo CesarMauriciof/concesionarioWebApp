@@ -1,7 +1,8 @@
-﻿@using Model
-@* Agrega aquí el namespace exacto de tu capa de lógica *@
+@using Model
 @using Logic 
 @inject NavigationManager NavManager
+@inject PayLog PayLog
+@inject SaleLog SaleLog
 
 <h3>Registrar Pago</h3>
 
@@ -9,35 +10,35 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div>
-        <label>Venta Asociada:</label>
-        <InputSelect @bind-Value="objPay.id_venta">
+    <div class="mb-3">
+        <label class="form-label">Venta Asociada:</label>
+        <InputSelect @bind-Value="objPay.IdVenta" class="form-select">
             <option value="0">-- Seleccione una Venta --</option>
             @if (sales != null)
             {
                 @foreach (var sale in sales)
                 {
-                    <option value="@sale.id_venta">
-                        Venta #@sale.id_venta
+                    <option value="@sale.IdVenta">
+                        Venta #@sale.IdVenta
                     </option>
                 }
             }
         </InputSelect>
     </div>
 
-    <div>
-        <label>Monto a Pagar:</label>
-        <InputNumber @bind-Value="objPay.monto" />
+    <div class="mb-3">
+        <label class="form-label">Monto a Pagar:</label>
+        <InputNumber @bind-Value="objPay.Monto" class="form-control" />
     </div>
 
-    <div>
-        <label>Fecha de Pago:</label>
-        <InputDate @bind-Value="objPay.fecha_pago" />
+    <div class="mb-3">
+        <label class="form-label">Fecha de Pago:</label>
+        <InputDate @bind-Value="objPay.FechaPago" class="form-control" />
     </div>
 
-    <div>
-        <label>Método de Pago:</label>
-        <InputSelect @bind-Value="objPay.metodo_pago">
+    <div class="mb-3">
+        <label class="form-label">Método de Pago:</label>
+        <InputSelect @bind-Value="objPay.MetodoPago" class="form-select">
             <option value="">-- Seleccione Método --</option>
             <option value="EFECTIVO">Efectivo</option>
             <option value="TRANSFERENCIA">Transferencia Bancaria</option>
@@ -46,7 +47,6 @@
         </InputSelect>
     </div>
 
-    <br />
     <button type="submit" class="btn btn-primary">Guardar Pago</button>
     <a href="/pay/list" class="btn btn-secondary ms-2">Cancelar</a>
 </EditForm>
@@ -59,7 +59,7 @@
 @code {
     PayEntity objPay = new PayEntity() 
     { 
-        fecha_pago = DateTime.Now 
+        FechaPago = DateTime.Now 
     };
 
     private string? successMessage;
@@ -69,8 +69,7 @@
     {
         try
         {
-            // Ajusta "SaleLog.SaleList()" según el nombre exacto de tu clase y método en Logic
-            sales = await Task.Run(() => SaleLog.SaleList());
+            sales = await SaleLog.SaleListAsync();
         }
         catch (Exception ex)
         {
@@ -78,21 +77,20 @@
         }
     }
 
-    private void SavePay()
+    private async Task SavePay()
     {
         try
         {
-            // Ajusta "PayLog.CreatePay" según el nombre exacto de tu clase y método en Logic
-            PayLog.CreatePay(objPay);
+            await PayLog.CreatePayAsync(objPay);
 
-            successMessage = $"El pago por valor de ${objPay.monto} se guardó exitosamente!";
-            objPay = new PayEntity() { fecha_pago = DateTime.Now };
+            successMessage = $"El pago por valor de ${objPay.Monto} se guardó exitosamente!";
+            objPay = new PayEntity() { FechaPago = DateTime.Now };
 
             NavManager.NavigateTo("/pay/list");
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el pago: {ex.InnerException?.Message ?? ex.Message}";
+            successMessage = $"Error al registrar el pago: {ex.Message}";
         }
     }
 }

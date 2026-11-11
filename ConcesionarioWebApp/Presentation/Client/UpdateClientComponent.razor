@@ -1,6 +1,7 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject ClientLog ClientLog
 
 <h3>Actualizar Información del Cliente</h3>
 
@@ -40,7 +41,7 @@ else
         </div>
 
         <button type="submit" class="btn btn-primary">Actualizar Cliente</button>
-        <a href="/ListClientPage" class="btn btn-secondary ms-2">Cancelar</a>
+        <a href="/client/list" class="btn btn-secondary ms-2">Cancelar</a>
     </EditForm>
 }
 
@@ -60,7 +61,7 @@ else
     {
         try
         {
-            objClient = await Task.Run(() => ClientLog.GetClientById(Id));
+            objClient = await ClientLog.GetClientByIdAsync(Id);
 
             if (objClient == null)
             {
@@ -73,20 +74,20 @@ else
         }
     }
 
-    private void UpdateClient()
+    private async Task UpdateClient()
     {
         try
         {
             if (objClient != null)
             {
-                ClientLog.UpdateClient(objClient);
+                await ClientLog.UpdateClientAsync(objClient);
                 successMessage = $"¡El cliente {objClient.Nombre} se actualizó exitosamente!";
-                NavManager.NavigateTo("/ListClientPage");
+                NavManager.NavigateTo("/client/list");
             }
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al actualizar el cliente: {ex.InnerException?.Message ?? ex.Message}";
+            successMessage = $"Error al actualizar el cliente: {ex.Message}";
         }
     }
 }

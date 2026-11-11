@@ -4,9 +4,10 @@
         <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
+        <PageTitle>Página no encontrada</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <h3>Página no encontrada</h3>
+            <p role="alert">La dirección solicitada no existe. <a href="">Volver al inicio</a>.</p>
         </LayoutView>
     </NotFound>
 </Router>

@@ -1,8 +1,11 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject SaleDetailLog SaleDetailLog
+@inject SaleLog SaleLog
+@inject VehicleLog VehicleLog
 
-<h3>Actualizar Detalle ID: @Id</h3>
+<h3>Actualizar Detalle de Venta (ID: @Id)</h3>
 
 @if (objDetail == null)
 {
@@ -17,15 +20,7 @@ else
         <DataAnnotationsValidator />
         <ValidationSummary />
 
-        <div class="mb-3">
-            <label class="form-label">ID Venta:</label>
-            <InputNumber @bind-Value="objDetail.id_venta" class="form-control" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">ID Vehículo:</label>
-            <InputNumber @bind-Value="objDetail.id_vehiculo" class="form-control" />
-        </div>
+        <SaleDetailFields Detail="objDetail" Sales="sales" Vehicles="vehicles" />
 
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
         <button type="button" class="btn btn-secondary ms-2" @onclick="Cancel">Cancelar</button>
@@ -42,13 +37,17 @@ else
     public int Id { get; set; }
 
     private SaleDetailEntity? objDetail;
+    private List<SaleEntity> sales = new();
+    private List<VehicleEntity> vehicles = new();
     private string? message;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            objDetail = await Task.Run(() => SaleDetailLog.GetSaleDetailById(Id));
+            sales = await SaleLog.SaleListAsync();
+            vehicles = await VehicleLog.VehicleListAsync();
+            objDetail = await SaleDetailLog.GetSaleDetailByIdAsync(Id);
 
             if (objDetail == null)
             {
@@ -61,20 +60,19 @@ else
         }
     }
 
-    private void UpdateDetail()
+    private async Task UpdateDetail()
     {
         try
         {
             if (objDetail != null)
             {
-                SaleDetailLog.UpdateSaleDetail(objDetail);
-                message = "¡Detalle actualizado con éxito!";
+                await SaleDetailLog.UpdateSaleDetailAsync(objDetail);
                 NavManager.NavigateTo("/saledetail/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

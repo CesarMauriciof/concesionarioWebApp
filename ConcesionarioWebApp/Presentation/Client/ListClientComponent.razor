@@ -1,12 +1,13 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject ClientLog ClientLog
 
 <h3>Lista de Clientes</h3>
 
 <div class="mb-3">
-    <a href="/CreateClientPage" class="btn btn-success">Registrar Nuevo Cliente</a>
+    <a href="/client/create" class="btn btn-success">Registrar Nuevo Cliente</a>
 </div>
 
 @if (clients == null)
@@ -35,15 +36,15 @@ else
         @foreach (var client in clients)
         {
             <tr>
-                <td>@client.Id_Cliente</td>
+                <td>@client.IdCliente</td>
                 <td>@client.Cedula</td>
                 <td>@client.Nombre</td>
                 <td>@client.Telefono</td>
                 <td>@client.Correo</td>
                 <td>@client.Direccion</td>
                 <td>
-                    <button class="btn btn-primary btn-sm" @onclick="() => EditClient(client.Id_Cliente)">Editar</button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(client.Id_Cliente)">Eliminar</button>
+                    <button class="btn btn-primary btn-sm" @onclick="() => EditClient(client.IdCliente)">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(client.IdCliente)">Eliminar</button>
                 </td>
             </tr>
         }
@@ -69,7 +70,7 @@ else
     {
         try
         {
-            clients = await Task.Run(() => ClientLog.ClientList());
+            clients = await ClientLog.ClientListAsync();
         }
         catch (Exception ex)
         {
@@ -87,18 +88,18 @@ else
 
         try
         {
-            ClientLog.DeleteClient(id);
+            await ClientLog.DeleteClientAsync(id);
             message = "Cliente eliminado correctamente.";
             await LoadClients();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar el cliente: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el cliente: {ex.Message}";
         }
     }
 
     private void EditClient(int id)
     {
-        NavManager.NavigateTo($"/UpdateClientPage/{id}");
+        NavManager.NavigateTo($"/client/update/{id}");
     }
 }

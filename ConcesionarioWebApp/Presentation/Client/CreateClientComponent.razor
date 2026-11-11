@@ -1,6 +1,7 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject ClientLog ClientLog
 
 <h3>Registrar Nuevo Cliente</h3>
 
@@ -34,7 +35,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Guardar Cliente</button>
-    <a href="/ListClientPage" class="btn btn-secondary ms-2">Cancelar</a>
+    <a href="/client/list" class="btn btn-secondary ms-2">Cancelar</a>
 </EditForm>
 
 @if (successMessage != null)
@@ -46,18 +47,18 @@
     ClientEntity objClient = new ClientEntity();
     private string? successMessage;
 
-    private void SaveClient()
+    private async Task SaveClient()
     {
         try
         {
-            ClientLog.CreateClient(objClient);
+            await ClientLog.CreateClientAsync(objClient);
             successMessage = $"¡El cliente {objClient.Nombre} se registró exitosamente!";
             objClient = new ClientEntity();
-            NavManager.NavigateTo("/ListClientPage");
+            NavManager.NavigateTo("/client/list");
         }
         catch (Exception ex)
         {
-            successMessage = $"Error al registrar el cliente: {ex.InnerException?.Message ?? ex.Message}";
+            successMessage = $"Error al registrar el cliente: {ex.Message}";
         }
     }
 }

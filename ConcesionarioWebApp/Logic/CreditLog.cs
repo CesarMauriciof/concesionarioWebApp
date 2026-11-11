@@ -1,69 +1,30 @@
-﻿using Data;
+using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace Logic;
 
-public class CreditLog
+/// <summary>Lógica de negocio de créditos.</summary>
+public class CreditLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<CreditEntity>(dbFactory)
 {
-    /*
-     * Método que permite crear una nueva venta en la base de datos.
-     */
-    public static void CreateCredit(CreditEntity objCredit)
-    {
-        using (var db = new DataContext())
-        {
-            db.Credits.Add(objCredit);
-            db.SaveChanges();
-        }
-    }
+    /// <summary>Devuelve todos los créditos.</summary>
+    public Task<List<CreditEntity>> CreditListAsync() => ListAsync(q => q.OrderByDescending(c => c.IdCredito));
 
-    /*
-     * Método que devuelve una lista de todas las ventas existentes en la base de datos.
-     */
-    public static List<CreditEntity> CreditList()
-    {
-        using (var db = new DataContext())
-        {
-            return db.Credits.ToList();
-        }
-    }
+    /// <summary>Busca un crédito por su ID. Devuelve null si no existe.</summary>
+    public Task<CreditEntity?> GetCreditByIdAsync(int id) => GetByIdAsync(id);
 
-    /*
-     * Método que actualiza una venta existente en la base de datos.
-     */
-    public static void UpdateCredit(CreditEntity objCredit)
-    {
-        using (var db = new DataContext())
-        {
-            db.Credits.Update(objCredit);
-            db.SaveChanges();
-        }
-    }
+    /// <summary>Registra un crédito.</summary>
+    public Task CreateCreditAsync(CreditEntity entity) => CreateAsync(entity);
 
-    /*
-     * Método que busca un crédito por su ID. Devuelve null si no existe.
-     */
-    public static CreditEntity? GetCreditById(int id)
-    {
-        using (var db = new DataContext())
-        {
-            return db.Credits.Find(id);
-        }
-    }
+    /// <summary>Actualiza un crédito.</summary>
+    public Task UpdateCreditAsync(CreditEntity entity) => UpdateAsync(entity);
 
-    /*
-     * Método que elimina un crédito por su ID.
-     */
-    public static void DeleteCredit(int id)
+    /// <summary>Elimina un crédito por su ID.</summary>
+    public Task DeleteCreditAsync(int id) => DeleteAsync(id);
+
+    protected override void Normalize(CreditEntity entity)
     {
-        using (var db = new DataContext())
-        {
-            var entity = db.Credits.Find(id);
-            if (entity != null)
-            {
-                db.Credits.Remove(entity);
-                db.SaveChanges();
-            }
-        }
+        entity.EntidadBancaria = entity.EntidadBancaria.Trim();
     }
 }

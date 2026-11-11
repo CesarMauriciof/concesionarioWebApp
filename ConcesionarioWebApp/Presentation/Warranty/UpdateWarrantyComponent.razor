@@ -1,6 +1,8 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject SaleDetailLog SaleDetailLog
+@inject WarrantyLog WarrantyLog
 
 <h3>Actualizar Garantía (ID: @Id)</h3>
 
@@ -16,14 +18,14 @@ else
 
         <div class="mb-3">
             <label class="form-label">Detalle de Venta:</label>
-            <InputSelect @bind-Value="objWarranty.id_detalle" class="form-control">
+            <InputSelect @bind-Value="objWarranty.IdDetalle" class="form-control">
                 <option value="0">-- Seleccione un Detalle de Venta --</option>
                 @if (saleDetails != null)
                 {
                     @foreach (var detail in saleDetails)
                     {
-                        <option value="@detail.id_detalle">
-                            Detalle #@detail.id_detalle - Venta #@detail.id_venta - Vehículo #@detail.id_vehiculo
+                        <option value="@detail.IdDetalle">
+                            Detalle #@detail.IdDetalle - Venta #@detail.IdVenta - Vehículo #@detail.IdVehiculo
                         </option>
                     }
                 }
@@ -32,12 +34,12 @@ else
 
         <div class="mb-3">
             <label class="form-label">Fecha de Inicio:</label>
-            <InputDate @bind-Value="objWarranty.fecha_inicio" class="form-control" />
+            <InputDate @bind-Value="objWarranty.FechaInicio" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Condiciones:</label>
-            <InputTextArea @bind-Value="objWarranty.condiciones" class="form-control" />
+            <InputTextArea @bind-Value="objWarranty.Condiciones" class="form-control" />
         </div>
 
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -62,8 +64,8 @@ else
     {
         try
         {
-            saleDetails = await Task.Run(() => SaleDetailLog.SaleDetailList());
-            objWarranty = await Task.Run(() => WarrantyLog.GetWarrantyById(Id));
+            saleDetails = await SaleDetailLog.SaleDetailListAsync();
+            objWarranty = await WarrantyLog.GetWarrantyByIdAsync(Id);
 
             if (objWarranty == null)
             {
@@ -76,20 +78,20 @@ else
         }
     }
 
-    private void UpdateWarranty()
+    private async Task UpdateWarranty()
     {
         try
         {
             if (objWarranty != null)
             {
-                WarrantyLog.UpdateWarranty(objWarranty);
+                await WarrantyLog.UpdateWarrantyAsync(objWarranty);
                 message = "¡Garantía actualizada con éxito!";
                 NavManager.NavigateTo("/warranty/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

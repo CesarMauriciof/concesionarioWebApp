@@ -1,70 +1,30 @@
-﻿using Data;
+using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de mantenimientos.</summary>
+public class MaintenanceLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<MaintenanceEntity>(dbFactory)
 {
-    public class MaintenanceLog
+    /// <summary>Devuelve todos los mantenimientos.</summary>
+    public Task<List<MaintenanceEntity>> MaintenanceListAsync() => ListAsync(q => q.OrderByDescending(m => m.FechaProgramada));
+
+    /// <summary>Busca un mantenimiento por su ID. Devuelve null si no existe.</summary>
+    public Task<MaintenanceEntity?> GetMaintenanceByIdAsync(int id) => GetByIdAsync(id);
+
+    /// <summary>Registra un mantenimiento.</summary>
+    public Task CreateMaintenanceAsync(MaintenanceEntity entity) => CreateAsync(entity);
+
+    /// <summary>Actualiza un mantenimiento.</summary>
+    public Task UpdateMaintenanceAsync(MaintenanceEntity entity) => UpdateAsync(entity);
+
+    /// <summary>Elimina un mantenimiento por su ID.</summary>
+    public Task DeleteMaintenanceAsync(int id) => DeleteAsync(id);
+
+    protected override void Normalize(MaintenanceEntity entity)
     {
-        /*
-         * Método que permite crear un nuevo mantenimiento en la base de datos.
-         */
-        public static void CreateMaintenance(MaintenanceEntity objMaintenance)
-        {
-            using (var db = new DataContext())
-            {
-                db.Maintenances.Add(objMaintenance);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que devuelve una lista de todos los mantenimientos existentes en la base de datos.
-         */
-        public static List<MaintenanceEntity> MaintenanceList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.Maintenances.ToList();
-            }
-        }
-
-        /*
-         * Método que actualiza un mantenimiento existente en la base de datos.
-         */
-        public static void UpdateMaintenance(MaintenanceEntity objMaintenance)
-        {
-            using (var db = new DataContext())
-            {
-                db.Maintenances.Update(objMaintenance);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que busca un mantenimiento por su ID. Devuelve null si no existe.
-         */
-        public static MaintenanceEntity? GetMaintenanceById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.Maintenances.Find(id);
-            }
-        }
-
-        /*
-         * Método que elimina un mantenimiento por su ID.
-         */
-        public static void DeleteMaintenance(int id)
-        {
-            using (var db = new DataContext())
-            {
-                var entity = db.Maintenances.Find(id);
-                if (entity != null)
-                {
-                    db.Maintenances.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
-        }
+        entity.ServiciosRealizados = entity.ServiciosRealizados.Trim();
     }
 }

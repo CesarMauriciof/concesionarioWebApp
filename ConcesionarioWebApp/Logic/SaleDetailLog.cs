@@ -1,70 +1,48 @@
 using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de detalles de venta.</summary>
+public class SaleDetailLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<SaleDetailEntity>(dbFactory)
 {
-    public class SaleDetailLog
+    /// <summary>Devuelve todos los detalles de venta con su vehículo.</summary>
+    public Task<List<SaleDetailEntity>> SaleDetailListAsync() =>
+        ListAsync(q => q.Include(d => d.Vehiculo).OrderByDescending(d => d.IdDetalle));
+
+    /// <summary>Busca un detalle de venta por su ID. Devuelve null si no existe.</summary>
+    public Task<SaleDetailEntity?> GetSaleDetailByIdAsync(int id) => GetByIdAsync(id);
+
+    /// <summary>Registra un detalle de venta (un vehículo solo puede venderse una vez).</summary>
+    public async Task CreateSaleDetailAsync(SaleDetailEntity entity)
     {
-        /*
-         * Método que permite crear un nuevo detalle de venta en la base de datos.
-         */
-        public static void CreateSaleDetail(SaleDetailEntity objSaleDetail)
-        {
-            using (var db = new DataContext())
-            {
-                db.SaleDetails.Add(objSaleDetail);
-                db.SaveChanges();
-            }
-        }
+        await EnsureVehicleNotSoldAsync(entity);
+        await CreateAsync(entity);
+    }
 
-        /*
-         * Método que devuelve una lista de todos los detalles de venta existentes.
-         */
-        public static List<SaleDetailEntity> SaleDetailList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.SaleDetails.ToList();
-            }
-        }
+    /// <summary>Actualiza un detalle de venta (un vehículo solo puede venderse una vez).</summary>
+    public async Task UpdateSaleDetailAsync(SaleDetailEntity entity)
+    {
+        await EnsureVehicleNotSoldAsync(entity);
+        await UpdateAsync(entity);
+    }
 
-        /*
-         * Método que actualiza un detalle de venta existente en la base de datos.
-         */
-        public static void UpdateSaleDetail(SaleDetailEntity objSaleDetail)
-        {
-            using (var db = new DataContext())
-            {
-                db.SaleDetails.Update(objSaleDetail);
-                db.SaveChanges();
-            }
-        }
+    /// <summary>Elimina un detalle de venta por su ID.</summary>
+    public Task DeleteSaleDetailAsync(int id) => DeleteAsync(id);
 
-        /*
-         * Método que busca un detalle de venta por su ID. Devuelve null si no existe.
-         */
-        public static SaleDetailEntity? GetSaleDetailById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.SaleDetails.Find(id);
-            }
-        }
+    private async Task EnsureVehicleNotSoldAsync(SaleDetailEntity entity)
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var otherSaleId = await db.SaleDetails
+            .Where(d => d.IdVehiculo == entity.IdVehiculo && d.IdDetalle != entity.IdDetalle)
+            .Select(d => (int?)d.IdVenta)
+            .FirstOrDefaultAsync();
 
-        /*
-         * Método que elimina un detalle de venta por su ID.
-         */
-        public static void DeleteSaleDetail(int id)
+        if (otherSaleId != null)
         {
-            using (var db = new DataContext())
-            {
-                var entity = db.SaleDetails.Find(id);
-                if (entity != null)
-                {
-                    db.SaleDetails.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
+            throw new BusinessException($"El vehículo seleccionado ya fue vendido en la venta #{otherSaleId}.");
         }
     }
 }

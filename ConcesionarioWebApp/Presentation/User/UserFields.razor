@@ -1,0 +1,62 @@
+@using Model
+
+@* Campos compartidos por los formularios de crear y actualizar usuario *@
+
+<div class="mb-3">
+    <label class="form-label">Nombre de usuario:</label>
+    <InputText @bind-Value="Form.NombreUsuario" class="form-control" autocomplete="off" />
+    <ValidationMessage For="() => Form.NombreUsuario" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Correo:</label>
+    <InputText @bind-Value="Form.Correo" class="form-control" type="email" />
+    <ValidationMessage For="() => Form.Correo" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Rol:</label>
+    <InputSelect @bind-Value="Form.Rol" class="form-select">
+        @foreach (var role in Enum.GetValues<UserRole>())
+        {
+            <option value="@role">@role</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Empleado asociado (opcional):</label>
+    <InputSelect @bind-Value="Form.IdEmpleado" class="form-select">
+        <option value="">-- Sin empleado --</option>
+        @foreach (var employee in Employees)
+        {
+            <option value="@employee.IdEmpleado">@employee.Nombre - @employee.Cargo</option>
+        }
+    </InputSelect>
+</div>
+
+<div class="mb-3 form-check">
+    <InputCheckbox @bind-Value="Form.Activo" class="form-check-input" id="chkActivo" />
+    <label class="form-check-label" for="chkActivo">Usuario activo</label>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">@(Form.EsNuevo ? "Contraseña:" : "Nueva contraseña (déjela vacía para no cambiarla):")</label>
+    <InputText @bind-Value="Form.Contrasena" class="form-control" type="password" autocomplete="new-password" />
+    <div class="form-text">Mínimo 8 caracteres, con al menos una letra y un número.</div>
+    <ValidationMessage For="() => Form.Contrasena" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Confirmar contraseña:</label>
+    <InputText @bind-Value="Form.ConfirmarContrasena" class="form-control" type="password" autocomplete="new-password" />
+    <ValidationMessage For="() => Form.ConfirmarContrasena" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public UserFormModel Form { get; set; } = default!;
+
+    [Parameter]
+    public List<EmployeeEntity> Employees { get; set; } = new();
+}

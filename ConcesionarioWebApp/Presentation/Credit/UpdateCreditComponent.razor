@@ -1,6 +1,8 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject CreditLog CreditLog
+@inject PayLog PayLog
 
 <h3>Actualizar Crédito (ID: @Id)</h3>
 
@@ -19,14 +21,14 @@ else
 
         <div class="mb-3">
             <label class="form-label">Pago Asociado:</label>
-            <InputSelect @bind-Value="objCredit.id_pago" class="form-control">
+            <InputSelect @bind-Value="objCredit.IdPago" class="form-control">
                 <option value="0">-- Seleccione un Pago --</option>
                 @if (pays != null)
                 {
                     @foreach (var pay in pays)
                     {
-                        <option value="@pay.id_pago">
-                            Pago #@pay.id_pago - Venta #@pay.id_venta (@pay.monto.ToString("C"))
+                        <option value="@pay.IdPago">
+                            Pago #@pay.IdPago - Venta #@pay.IdVenta (@pay.Monto.ToString("C"))
                         </option>
                     }
                 }
@@ -35,17 +37,17 @@ else
 
         <div class="mb-3">
             <label class="form-label">Entidad Bancaria:</label>
-            <InputText @bind-Value="objCredit.entidad_bancaria" class="form-control" />
+            <InputText @bind-Value="objCredit.EntidadBancaria" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Monto Aprobado:</label>
-            <InputNumber @bind-Value="objCredit.monto_aprobado" class="form-control" />
+            <InputNumber @bind-Value="objCredit.MontoAprobado" class="form-control" />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Número de Cuotas:</label>
-            <InputNumber @bind-Value="objCredit.numero_cuotas" class="form-control" />
+            <InputNumber @bind-Value="objCredit.NumeroCuotas" class="form-control" />
         </div>
 
         <button type="submit" class="btn btn-success">Guardar Cambios</button>
@@ -70,8 +72,8 @@ else
     {
         try
         {
-            pays = await Task.Run(() => PayLog.PayList());
-            objCredit = await Task.Run(() => CreditLog.GetCreditById(Id));
+            pays = await PayLog.PayListAsync();
+            objCredit = await CreditLog.GetCreditByIdAsync(Id);
 
             if (objCredit == null)
             {
@@ -84,20 +86,20 @@ else
         }
     }
 
-    private void UpdateCredit()
+    private async Task UpdateCredit()
     {
         try
         {
             if (objCredit != null)
             {
-                CreditLog.UpdateCredit(objCredit);
+                await CreditLog.UpdateCreditAsync(objCredit);
                 message = "¡Crédito actualizado con éxito!";
                 NavManager.NavigateTo("/credit/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

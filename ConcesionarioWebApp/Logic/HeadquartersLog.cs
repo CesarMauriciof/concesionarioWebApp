@@ -1,70 +1,32 @@
 using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de sedes.</summary>
+public class HeadquartersLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<HeadquartersEntity>(dbFactory)
 {
-    public class HeadquartersLog
+    /// <summary>Devuelve todos los sedes.</summary>
+    public Task<List<HeadquartersEntity>> HeadquartersListAsync() => ListAsync(q => q.OrderBy(h => h.NombreSede));
+
+    /// <summary>Busca una sede por su ID. Devuelve null si no existe.</summary>
+    public Task<HeadquartersEntity?> GetHeadquartersByIdAsync(int id) => GetByIdAsync(id);
+
+    /// <summary>Registra una sede.</summary>
+    public Task CreateHeadquartersAsync(HeadquartersEntity entity) => CreateAsync(entity);
+
+    /// <summary>Actualiza una sede.</summary>
+    public Task UpdateHeadquartersAsync(HeadquartersEntity entity) => UpdateAsync(entity);
+
+    /// <summary>Elimina una sede por su ID.</summary>
+    public Task DeleteHeadquartersAsync(int id) => DeleteAsync(id);
+
+    protected override void Normalize(HeadquartersEntity entity)
     {
-        /*
-         * Método que permite crear una nueva sede en la base de datos.
-         */
-        public static void CreateHeadquarters(HeadquartersEntity objHeadquarters)
-        {
-            using (var db = new DataContext())
-            {
-                db.Headquarters.Add(objHeadquarters);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que devuelve una lista de todas las sedes existentes en la base de datos.
-         */
-        public static List<HeadquartersEntity> HeadquartersList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.Headquarters.ToList();
-            }
-        }
-
-        /*
-         * Método que actualiza una sede existente en la base de datos.
-         */
-        public static void UpdateHeadquarters(HeadquartersEntity objHeadquarters)
-        {
-            using (var db = new DataContext())
-            {
-                db.Headquarters.Update(objHeadquarters);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que busca una sede por su ID. Devuelve null si no existe.
-         */
-        public static HeadquartersEntity? GetHeadquartersById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.Headquarters.Find(id);
-            }
-        }
-
-        /*
-         * Método que elimina una sede por su ID.
-         */
-        public static void DeleteHeadquarters(int id)
-        {
-            using (var db = new DataContext())
-            {
-                var entity = db.Headquarters.Find(id);
-                if (entity != null)
-                {
-                    db.Headquarters.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
-        }
+        entity.NombreSede = entity.NombreSede.Trim();
+        entity.Ciudad = entity.Ciudad.Trim();
+        entity.Direccion = entity.Direccion.Trim();
     }
 }

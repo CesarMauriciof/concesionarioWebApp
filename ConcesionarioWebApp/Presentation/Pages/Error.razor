@@ -1,0 +1,22 @@
+@page "/error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<h3 class="text-danger">Ocurrió un error inesperado</h3>
+<p>Intente de nuevo. Si el problema continúa, comuníquese con el administrador del sistema.</p>
+
+@if (!string.IsNullOrEmpty(RequestId))
+{
+    <p><strong>Código de solicitud:</strong> <code>@RequestId</code></p>
+}
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

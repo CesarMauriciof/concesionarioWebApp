@@ -2,6 +2,7 @@
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject SaleDetailLog SaleDetailLog
 
 <h3>Gestión de Detalles de Ventas</h3>
 
@@ -14,7 +15,7 @@
     <tr>
         <th>ID Detalle</th>
         <th>ID Venta</th>
-        <th>ID Vehículo</th>
+        <th>Vehículo</th>
         <th>Acciones</th>
     </tr>
     </thead>
@@ -36,14 +37,14 @@
         @foreach (var detail in details)
         {
             <tr>
-                <td>@detail.id_detalle</td>
-                <td>@detail.id_venta</td>
-                <td>@detail.id_vehiculo</td>
+                <td>@detail.IdDetalle</td>
+                <td>@detail.IdVenta</td>
+                <td>@(detail.Vehiculo is null ? $"#{detail.IdVehiculo}" : $"{detail.Vehiculo.Marca} {detail.Vehiculo.Modelo} ({detail.Vehiculo.Vin})")</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(detail.id_detalle)">
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(detail.IdDetalle)">
                         Editar
                     </button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(detail.id_detalle)">
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(detail.IdDetalle)">
                         Eliminar
                     </button>
                 </td>
@@ -71,7 +72,7 @@
     {
         try
         {
-            details = await Task.Run(() => SaleDetailLog.SaleDetailList());
+            details = await SaleDetailLog.SaleDetailListAsync();
         }
         catch (Exception ex)
         {
@@ -89,13 +90,13 @@
 
         try
         {
-            SaleDetailLog.DeleteSaleDetail(id);
+            await SaleDetailLog.DeleteSaleDetailAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadDetails();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar el detalle de venta: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el detalle de venta: {ex.Message}";
         }
     }
 

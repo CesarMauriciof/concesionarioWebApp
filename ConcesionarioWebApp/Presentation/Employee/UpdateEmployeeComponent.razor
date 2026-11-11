@@ -1,6 +1,8 @@
 @using Logic
 @using Model
 @inject NavigationManager NavManager
+@inject EmployeeLog EmployeeLog
+@inject HeadquartersLog HeadquartersLog
 
 <h3>Actualizar Empleado ID: @Id</h3>
 
@@ -70,8 +72,8 @@ else
     {
         try
         {
-            headquartersList = await Task.Run(() => HeadquartersLog.HeadquartersList());
-            objEmployee = await Task.Run(() => EmployeeLog.GetEmployeeById(Id));
+            headquartersList = await HeadquartersLog.HeadquartersListAsync();
+            objEmployee = await EmployeeLog.GetEmployeeByIdAsync(Id);
 
             if (objEmployee == null)
             {
@@ -84,20 +86,20 @@ else
         }
     }
 
-    private void UpdateEmployee()
+    private async Task UpdateEmployee()
     {
         try
         {
             if (objEmployee != null)
             {
-                EmployeeLog.UpdateEmployee(objEmployee);
+                await EmployeeLog.UpdateEmployeeAsync(objEmployee);
                 message = "¡Empleado actualizado con éxito!";
                 NavManager.NavigateTo("/employee/list");
             }
         }
         catch (Exception ex)
         {
-            message = $"Error al actualizar: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"Error al actualizar: {ex.Message}";
         }
     }
 

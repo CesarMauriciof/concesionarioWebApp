@@ -1,0 +1,53 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject UserLog UserLog
+@inject EmployeeLog EmployeeLog
+
+<h3>Registrar Usuario</h3>
+
+<EditForm Model="form" OnValidSubmit="SaveUser" FormName="FrmUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <UserFields Form="form" Employees="employees" />
+
+    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+    <a href="/user/list" class="btn btn-secondary ms-2">Cancelar</a>
+</EditForm>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private UserFormModel form = new() { EsNuevo = true };
+    private List<EmployeeEntity> employees = new();
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            employees = await EmployeeLog.EmployeeListAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al cargar los empleados: {ex.Message}";
+        }
+    }
+
+    private async Task SaveUser()
+    {
+        try
+        {
+            await UserLog.CreateUserAsync(form.ToEntity(), form.Contrasena!);
+            NavManager.NavigateTo("/user/list");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error al registrar el usuario: {ex.Message}";
+        }
+    }
+}

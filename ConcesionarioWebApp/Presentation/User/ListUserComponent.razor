@@ -1,0 +1,115 @@
+@using Logic
+@using Model
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+@inject UserLog UserLog
+
+<h3>Gestión de Usuarios</h3>
+
+<div class="mb-3">
+    <a href="/user/create" class="btn btn-primary">Nuevo Usuario</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Correo</th>
+        <th>Rol</th>
+        <th>Empleado</th>
+        <th>Estado</th>
+        <th>Creado</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (users == null)
+    {
+        <tr>
+            <td colspan="8">Cargando usuarios...</td>
+        </tr>
+    }
+    else if (!users.Any())
+    {
+        <tr>
+            <td colspan="8">No hay usuarios registrados.</td>
+        </tr>
+    }
+    else
+    {
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.IdUsuario</td>
+                <td>@user.NombreUsuario</td>
+                <td>@user.Correo</td>
+                <td>@user.Rol</td>
+                <td>@(user.Empleado?.Nombre ?? "—")</td>
+                <td>
+                    <span class="badge @(user.Activo ? "bg-success" : "bg-secondary")">
+                        @(user.Activo ? "Activo" : "Inactivo")
+                    </span>
+                </td>
+                <td>@user.FechaCreacion.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(user.IdUsuario)">Editar</button>
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(user)">Eliminar</button>
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+
+@if (message != null)
+{
+    <div class="mt-3 alert alert-info">@message</div>
+}
+
+@code {
+    private List<UserEntity>? users;
+    private string? message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            users = await UserLog.UserListAsync();
+        }
+        catch (Exception ex)
+        {
+            users ??= new();
+            message = $"Error al cargar los usuarios: {ex.Message}";
+        }
+    }
+
+    private async Task Delete(UserEntity user)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"¿Desea eliminar el usuario '{user.NombreUsuario}'?"))
+        {
+            return;
+        }
+
+        try
+        {
+            await UserLog.DeleteUserAsync(user.IdUsuario);
+            message = "Usuario eliminado correctamente.";
+            await LoadUsers();
+        }
+        catch (Exception ex)
+        {
+            message = $"No se pudo eliminar el usuario: {ex.Message}";
+        }
+    }
+
+    private void GoToUpdate(int id)
+    {
+        NavManager.NavigateTo($"/user/update/{id}");
+    }
+}

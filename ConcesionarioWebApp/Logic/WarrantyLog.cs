@@ -1,70 +1,30 @@
-﻿using Data;
+using Data;
+using Logic.Common;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Logic
+namespace Logic;
+
+/// <summary>Lógica de negocio de garantías.</summary>
+public class WarrantyLog(IDbContextFactory<DataContext> dbFactory) : BaseLog<WarrantyEntity>(dbFactory)
 {
-    public class WarrantyLog
+    /// <summary>Devuelve todos los garantías.</summary>
+    public Task<List<WarrantyEntity>> WarrantyListAsync() => ListAsync(q => q.OrderByDescending(w => w.FechaInicio));
+
+    /// <summary>Busca una garantía por su ID. Devuelve null si no existe.</summary>
+    public Task<WarrantyEntity?> GetWarrantyByIdAsync(int id) => GetByIdAsync(id);
+
+    /// <summary>Registra una garantía.</summary>
+    public Task CreateWarrantyAsync(WarrantyEntity entity) => CreateAsync(entity);
+
+    /// <summary>Actualiza una garantía.</summary>
+    public Task UpdateWarrantyAsync(WarrantyEntity entity) => UpdateAsync(entity);
+
+    /// <summary>Elimina una garantía por su ID.</summary>
+    public Task DeleteWarrantyAsync(int id) => DeleteAsync(id);
+
+    protected override void Normalize(WarrantyEntity entity)
     {
-        /*
-         * Método que permite crear una nueva garantía en la base de datos.
-         */
-        public static void CreateWarranty(WarrantyEntity objWarranty)
-        {
-            using (var db = new DataContext())
-            {
-                db.Warranties.Add(objWarranty);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que devuelve una lista de todas las garantías existentes en la base de datos.
-         */
-        public static List<WarrantyEntity> WarrantyList()
-        {
-            using (var db = new DataContext())
-            {
-                return db.Warranties.ToList();
-            }
-        }
-
-        /*
-         * Método que actualiza una garantía existente en la base de datos.
-         */
-        public static void UpdateWarranty(WarrantyEntity objWarranty)
-        {
-            using (var db = new DataContext())
-            {
-                db.Warranties.Update(objWarranty);
-                db.SaveChanges();
-            }
-        }
-
-        /*
-         * Método que busca una garantía por su ID. Devuelve null si no existe.
-         */
-        public static WarrantyEntity? GetWarrantyById(int id)
-        {
-            using (var db = new DataContext())
-            {
-                return db.Warranties.Find(id);
-            }
-        }
-
-        /*
-         * Método que elimina una garantía por su ID.
-         */
-        public static void DeleteWarranty(int id)
-        {
-            using (var db = new DataContext())
-            {
-                var entity = db.Warranties.Find(id);
-                if (entity != null)
-                {
-                    db.Warranties.Remove(entity);
-                    db.SaveChanges();
-                }
-            }
-        }
+        entity.Condiciones = entity.Condiciones.Trim();
     }
 }

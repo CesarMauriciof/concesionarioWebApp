@@ -1,7 +1,8 @@
-﻿@using Logic
+@using Logic
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject PayLog PayLog
 
 <h3>Historial de Pagos</h3>
 
@@ -38,16 +39,16 @@
         @foreach (var pay in pays)
         {
             <tr>
-                <td>@pay.id_pago</td>
-                <td>@pay.id_venta</td>
-                <td>@pay.monto.ToString("C")</td>
-                <td>@pay.fecha_pago.ToShortDateString()</td>
-                <td>@pay.metodo_pago</td>
+                <td>@pay.IdPago</td>
+                <td>@pay.IdVenta</td>
+                <td>@pay.Monto.ToString("C")</td>
+                <td>@pay.FechaPago.ToString("dd/MM/yyyy")</td>
+                <td>@pay.MetodoPago</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(pay.id_pago)">
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(pay.IdPago)">
                         Editar
                     </button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(pay.id_pago)">
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(pay.IdPago)">
                         Eliminar
                     </button>
                 </td>
@@ -75,7 +76,7 @@
     {
         try
         {
-            pays = await Task.Run(() => PayLog.PayList());
+            pays = await PayLog.PayListAsync();
         }
         catch (Exception ex)
         {
@@ -93,13 +94,13 @@
 
         try
         {
-            PayLog.DeletePay(id);
+            await PayLog.DeletePayAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadPays();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar el pago: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar el pago: {ex.Message}";
         }
     }
 

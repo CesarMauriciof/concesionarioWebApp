@@ -2,6 +2,7 @@
 @using Model
 @inject NavigationManager NavManager
 @inject IJSRuntime JS
+@inject WarrantyLog WarrantyLog
 
 <h3>Listado de Garantías</h3>
 
@@ -37,15 +38,15 @@
         @foreach (var warranty in warranties)
         {
             <tr>
-                <td>@warranty.id_garantia</td>
-                <td>@warranty.id_detalle</td>
-                <td>@warranty.fecha_inicio.ToString("dd/MM/yyyy")</td>
-                <td>@warranty.condiciones</td>
+                <td>@warranty.IdGarantia</td>
+                <td>@warranty.IdDetalle</td>
+                <td>@warranty.FechaInicio.ToString("dd/MM/yyyy")</td>
+                <td>@warranty.Condiciones</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(warranty.id_garantia)">
+                    <button class="btn btn-warning btn-sm" @onclick="() => GoToUpdate(warranty.IdGarantia)">
                         Editar
                     </button>
-                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(warranty.id_garantia)">
+                    <button class="btn btn-danger btn-sm ms-1" @onclick="() => Delete(warranty.IdGarantia)">
                         Eliminar
                     </button>
                 </td>
@@ -73,7 +74,7 @@
     {
         try
         {
-            warranties = await Task.Run(() => WarrantyLog.WarrantyList());
+            warranties = await WarrantyLog.WarrantyListAsync();
         }
         catch (Exception ex)
         {
@@ -91,13 +92,13 @@
 
         try
         {
-            WarrantyLog.DeleteWarranty(id);
+            await WarrantyLog.DeleteWarrantyAsync(id);
             message = "Registro eliminado correctamente.";
             await LoadWarranties();
         }
         catch (Exception ex)
         {
-            message = $"No se pudo eliminar la garantía: {ex.InnerException?.Message ?? ex.Message}";
+            message = $"No se pudo eliminar la garantía: {ex.Message}";
         }
     }
 

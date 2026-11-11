@@ -1,0 +1,42 @@
+@using Model
+
+@* Campos compartidos por los formularios de crear y actualizar detalle de venta *@
+
+<div class="mb-3">
+    <label class="form-label">Venta:</label>
+    <InputSelect @bind-Value="Detail.IdVenta" class="form-select">
+        <option value="0">-- Seleccione una venta --</option>
+        @foreach (var sale in Sales)
+        {
+            <option value="@sale.IdVenta">
+                Venta #@sale.IdVenta - @sale.Fecha.ToString("dd/MM/yyyy") - @(sale.Cliente?.Nombre ?? "Sin cliente")
+            </option>
+        }
+    </InputSelect>
+    <ValidationMessage For="() => Detail.IdVenta" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Vehículo:</label>
+    <InputSelect @bind-Value="Detail.IdVehiculo" class="form-select">
+        <option value="0">-- Seleccione un vehículo --</option>
+        @foreach (var vehicle in Vehicles)
+        {
+            <option value="@vehicle.IdVehiculo">
+                @vehicle.Marca @vehicle.Modelo - VIN @vehicle.Vin (@vehicle.Precio.ToString("C"))
+            </option>
+        }
+    </InputSelect>
+    <ValidationMessage For="() => Detail.IdVehiculo" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public SaleDetailEntity Detail { get; set; } = default!;
+
+    [Parameter]
+    public List<SaleEntity> Sales { get; set; } = new();
+
+    [Parameter]
+    public List<VehicleEntity> Vehicles { get; set; } = new();
+}
