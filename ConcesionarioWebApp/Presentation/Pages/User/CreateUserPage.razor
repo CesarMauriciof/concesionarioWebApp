@@ -1,5 +1,6 @@
 @page "/user/create"
 @using Presentation.User
+@attribute [Authorize(Roles = "Administrador")]
 
 <PageTitle>Nuevo usuario</PageTitle>
 

@@ -11,3 +11,6 @@
 @using Presentation.Layout
 @using Presentation.Shared
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
+
+@* Todas las páginas exigen iniciar sesión. Las públicas (Login, AccessDenied, Error) usan [AllowAnonymous]. *@
+@attribute [Authorize]

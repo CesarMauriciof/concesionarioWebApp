@@ -1,5 +1,6 @@
 @page "/user/list"
 @using Presentation.User
+@attribute [Authorize(Roles = "Administrador")]
 
 <PageTitle>Usuarios</PageTitle>
 

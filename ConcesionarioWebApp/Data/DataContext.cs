@@ -23,6 +23,9 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
     public DbSet<QuoteEntity> Quotes => Set<QuoteEntity>();
     public DbSet<TestDriveEntity> TestDrives => Set<TestDriveEntity>();
 
+    // Sprint 5: cuentas externas (Google) vinculadas a cada usuario
+    public DbSet<ExternalLoginEntity> ExternalLogins => Set<ExternalLoginEntity>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -128,6 +131,21 @@ public class DataContext(DbContextOptions<DataContext> options) : DbContext(opti
             // Si se elimina el empleado, el usuario se conserva sin vínculo
             e.HasOne(x => x.Empleado).WithMany().HasForeignKey(x => x.IdEmpleado)
                 .OnDelete(DeleteBehavior.SetNull).HasConstraintName("fk_usuario_empleado");
+        });
+
+        // Sprint 5: vínculo entre un usuario y su cuenta externa (Google)
+        modelBuilder.Entity<ExternalLoginEntity>(e =>
+        {
+            // Una misma cuenta de Google solo puede estar vinculada a un usuario
+            e.HasIndex(x => new { x.Proveedor, x.ClaveProveedor }).IsUnique()
+                .HasDatabaseName("uq_usuario_login_externo_proveedor_clave");
+            e.HasIndex(x => x.IdUsuario).HasDatabaseName("ix_usuario_login_externo_id_usuario");
+
+            e.Property(x => x.FechaVinculacion).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            // Si se elimina el usuario, se eliminan también sus vínculos externos
+            e.HasOne(x => x.Usuario).WithMany(u => u.LoginsExternos).HasForeignKey(x => x.IdUsuario)
+                .OnDelete(DeleteBehavior.Cascade).HasConstraintName("fk_usuario_login_externo_usuario");
         });
 
         modelBuilder.Entity<QuoteEntity>(e =>

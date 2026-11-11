@@ -1,5 +1,6 @@
 @page "/user/update/{Id:int}"
 @using Presentation.User
+@attribute [Authorize(Roles = "Administrador")]
 
 <PageTitle>Editar usuario</PageTitle>
 
