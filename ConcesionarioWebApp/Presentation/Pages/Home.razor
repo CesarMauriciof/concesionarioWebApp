@@ -2,18 +2,33 @@
 
 <PageTitle>Inicio</PageTitle>
 
-<h1>Concesionario WebApp</h1>
+<section class="dash-hero">
+    <div>
+        <span class="dash-hero-kicker">Panel administrativo</span>
+        <h1>Concesionario WebApp</h1>
+        <p class="lead mb-0">Sistema de gestión del concesionario: inventario por sede, clientes, ventas, pagos, garantías y mantenimientos.</p>
+    </div>
+    <span class="dash-hero-icon d-none d-md-grid" aria-hidden="true">
+        <span class="bi bi-car-front-fill-nav-menu"></span>
+    </span>
+</section>
 
-<p class="lead">Sistema de gestión del concesionario: inventario por sede, clientes, ventas, pagos, garantías y mantenimientos.</p>
+<h2 class="dash-section-title">Módulos</h2>
 
-<div class="row g-3 mt-2">
-    @foreach (var (href, title, text) in modules)
+<div class="row g-3">
+    @foreach (var (href, title, text, icon, color) in modules)
     {
-        <div class="col-12 col-md-6 col-lg-4">
-            <a href="@href" class="card h-100 text-decoration-none">
+        <div class="col-12 col-md-6 col-xl-4">
+            <a href="@href" class="card module-card h-100 text-decoration-none">
                 <div class="card-body">
-                    <h5 class="card-title">@title</h5>
-                    <p class="card-text text-body-secondary">@text</p>
+                    <span class="module-icon" style="--module-color: @color" aria-hidden="true">
+                        <span class="bi @icon"></span>
+                    </span>
+                    <div>
+                        <h5 class="card-title">@title</h5>
+                        <p class="card-text text-body-secondary">@text</p>
+                    </div>
+                    <span class="module-arrow" aria-hidden="true">›</span>
                 </div>
             </a>
         </div>
@@ -21,14 +36,14 @@
 </div>
 
 @code {
-    private readonly (string Href, string Title, string Text)[] modules =
+    private readonly (string Href, string Title, string Text, string Icon, string Color)[] modules =
     [
-        ("vehicle/list", "Vehículos", "Inventario de vehículos por sede."),
-        ("client/list", "Clientes", "Registro de clientes compradores."),
-        ("quote/list", "Cotizaciones", "Ofertas de precio a clientes antes de la venta."),
-        ("testdrive/list", "Pruebas de manejo", "Agenda de pruebas de manejo por vehículo."),
-        ("sale/list", "Ventas", "Ventas, detalles y vehículos vendidos."),
-        ("pay/list", "Pagos y créditos", "Pagos de cada venta y créditos bancarios."),
-        ("warranty/list", "Posventa", "Garantías y mantenimientos programados."),
+        ("vehicle/list", "Vehículos", "Inventario de vehículos por sede.", "bi-car-front-fill-nav-menu", "#2563eb"),
+        ("client/list", "Clientes", "Registro de clientes compradores.", "bi-person-fill-nav-menu", "#0891b2"),
+        ("quote/list", "Cotizaciones", "Ofertas de precio a clientes antes de la venta.", "bi-file-earmark-text-nav-menu", "#7c3aed"),
+        ("testdrive/list", "Pruebas de manejo", "Agenda de pruebas de manejo por vehículo.", "bi-calendar-check-nav-menu", "#d97706"),
+        ("sale/list", "Ventas", "Ventas, detalles y vehículos vendidos.", "bi-receipt-nav-menu", "#dc2626"),
+        ("pay/list", "Pagos y créditos", "Pagos de cada venta y créditos bancarios.", "bi-cash-coin-nav-menu", "#059669"),
+        ("warranty/list", "Posventa", "Garantías y mantenimientos programados.", "bi-shield-check-nav-menu", "#475569"),
     ];
 }
