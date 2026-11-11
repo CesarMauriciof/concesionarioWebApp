@@ -1,5 +1,24 @@
-@* =====================================================================================
-    PEGAR AQUÍ - T6 (Mauricio)
-    Borra TODO el contenido de este archivo y pega el código que te llegó en tu mensaje.
-    Lo que hay abajo es solo para que el proyecto compile mientras tanto.
-   ===================================================================================== *@
+@using System.Security.Claims
+
+@*
+    Muestra en la barra superior quién inició sesión, su rol y el botón "Cerrar sesión".
+    Está incluido en MainLayout.razor.
+*@
+
+<AuthorizeView>
+    <Authorized>
+        <div class="d-flex align-items-center gap-2">
+            <span class="text-body-secondary small d-none d-sm-inline">@context.User.Identity?.Name</span>
+            <span class="badge text-bg-secondary">@context.User.FindFirst(ClaimTypes.Role)?.Value</span>
+
+            @* Cerrar sesión SIEMPRE por POST con token antiforgery (no con un enlace) *@
+            <form method="post" action="auth/logout" class="m-0">
+                <AntiforgeryToken />
+                <button type="submit" class="btn btn-sm btn-outline-danger">Cerrar sesión</button>
+            </form>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a href="login" class="btn btn-sm btn-primary">Iniciar sesión</a>
+    </NotAuthorized>
+</AuthorizeView>
