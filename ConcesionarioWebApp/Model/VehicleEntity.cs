@@ -26,7 +26,7 @@ public class VehicleEntity
     [Column("modelo")]
     public string Modelo { get; set; } = string.Empty;
 
-    [Range(typeof(decimal), "0.01", "9999999999.99", ErrorMessage = "El precio debe ser mayor que cero.")]
+    [Range(typeof(decimal), "0.01", "9999999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "El precio debe ser mayor que cero.")]
     [Column("precio", TypeName = "decimal(12,2)")]
     public decimal Precio { get; set; }
 

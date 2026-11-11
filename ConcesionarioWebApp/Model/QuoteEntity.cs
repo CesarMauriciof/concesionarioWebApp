@@ -20,7 +20,7 @@ public class QuoteEntity
     [Column("fecha_vencimiento", TypeName = "date")]
     public DateTime FechaVencimiento { get; set; } = DateTime.Today.AddDays(15);
 
-    [Range(typeof(decimal), "0.01", "9999999999.99", ErrorMessage = "El precio ofrecido debe ser mayor que cero.")]
+    [Range(typeof(decimal), "0.01", "9999999999.99", ParseLimitsInInvariantCulture = true, ErrorMessage = "El precio ofrecido debe ser mayor que cero.")]
     [Column("precio_ofrecido", TypeName = "decimal(12,2)")]
     public decimal PrecioOfrecido { get; set; }
 
