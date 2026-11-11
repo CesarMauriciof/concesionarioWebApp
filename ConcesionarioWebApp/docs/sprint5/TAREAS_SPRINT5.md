@@ -32,29 +32,26 @@ Reglas clave:
 - El login y el logout son **endpoints HTTP**, no código dentro de componentes: la app es
   InteractiveServer (SignalR) y desde ahí no se pueden escribir cookies.
 
-## 2. Estructura que ya está lista (rama `feature-estructura-autenticacion-oauth`)
+## 2. Estructura que ya está lista (rama `feature-estructura-autenticacion-oauth`) – Adriana
 
-| Archivo | Estado | Responsable |
-|---|---|---|
-| `Presentation/Program.cs` | ✅ Listo: ya llama a todo. **Nadie necesita tocarlo** | — |
-| `Presentation/Auth/AuthenticationSetup.cs` | 🟡 Cookies listas; falta Google | Mauricio (T2) |
-| `Presentation/Auth/AuthEndpoints.cs` | 🔴 Stubs (redirigen a `/login?error=pendiente`) | Yeison (T4) |
-| `Presentation/Auth/UserClaims.cs` | 🔴 Stub | Yeison (T4) |
-| `Presentation/Auth/LogoutEndpoint.cs` | 🔴 Stub | Mauricio (T6) |
-| `Presentation/Layout/LoginDisplay.razor` | 🔴 Stub (ya está en MainLayout) | Mauricio (T6) |
-| `Presentation/Pages/Auth/Login.razor` | 🔴 Stub | Camilo (T5) |
-| `Presentation/Pages/Auth/AccessDenied.razor` | 🟡 Básico | Camilo (T5) |
-| `Presentation/Layout/LoginLayout.razor` | 🟡 Básico | Camilo (T5) |
-| `Presentation/Shared/RedirectToLogin.razor` | 🟡 Básico (sin returnUrl) | Camilo (T5) |
-| `Logic/Auth/AuthLog.cs` | 🔴 Stub (lanza NotImplementedException) | Yeison (T4) |
-| `Logic/Auth/AuthenticatedUser.cs`, `ExternalLoginData.cs` | ✅ Listos (contratos) | — |
-| `Model/ExternalLoginEntity.cs` | ✅ Lista (aún no registrada en DataContext) | Keiner (T3) |
-| `Data/DataContext.cs`, `Model/UserEntity.cs` | 🔴 TODO marcado | Keiner (T3) |
-| `Data/Scripts/03_crear_administrador_inicial.sql` | 🔴 Plantilla | Keiner (T3) |
-| `Presentation/Routes.razor`, `_Imports.razor`, `NavMenu.razor`, `Pages/User/*` | 🔴 TODO marcado | Adriana (T7) |
+**Cómo se trabaja:** cada integrante recibe por privado un mensaje con el **código completo** de sus
+archivos. Los archivos ya existen en el proyecto con el aviso **`PEGAR AQUÍ - T# (Nombre)`**: se borra todo
+su contenido y se pega el código del mensaje. Nadie necesita tocar `Program.cs`.
 
-Busquen en Rider **`TODO [T`** (Ctrl+Shift+F) para ver exactamente qué le toca a cada uno.
+| Archivo | Responsable |
+|---|---|
+| `Presentation/Program.cs`, `Logic/DependencyInjection.cs`, `_Imports.razor`, `MainLayout.razor` | ✅ Listos (Adriana) |
+| `Logic/Auth/AuthenticatedUser.cs`, `Logic/Auth/ExternalLoginData.cs`, `Model/ExternalLoginEntity.cs` | ✅ Listos (contratos) |
+| `Model/UserEntity.cs`, `Data/DataContext.cs`, `Data/Scripts/03_crear_administrador_inicial.sql` + migración | Keiner (T3) |
+| `Presentation/Auth/AuthenticationSetup.cs` | Mauricio (T2) |
+| `Logic/Auth/AuthLog.cs`, `Presentation/Auth/UserClaims.cs`, `Presentation/Auth/AuthEndpoints.cs` | Yeison (T4) |
+| `Pages/Auth/Login.razor`, `Layout/LoginLayout.razor`, `Pages/Auth/AccessDenied.razor`, `Shared/RedirectToLogin.razor` | Camilo (T5) |
+| `Presentation/Auth/LogoutEndpoint.cs`, `Layout/LoginDisplay.razor` | Mauricio (T6) |
+| `Routes.razor`, `_Imports.razor`, `NavMenu.razor`, `Pages/Home.razor`, `Pages/Error.razor`, `Pages/User/*` | Adriana (T7) |
+
 Cada archivo tiene **un solo responsable**: así no hay conflictos al hacer merge.
+**Importante:** cada uno pega su código en su turno (sección 4), después de `git pull origin develop`,
+porque algunos archivos usan lo que pegaron los anteriores.
 
 ## 3. Tareas para Jira
 
@@ -150,8 +147,8 @@ T1 estructura ──▶ T3 Data (Keiner) ──▶ T2 Google (Mauricio) ──�
                                                                                     ──▶ T7 Roles (Adriana)
 ```
 
-- Todos pueden **empezar en paralelo** desde la estructura: los contratos (`AuthenticatedUser`,
-  `ExternalLoginData`, `ExternalLoginEntity`, nombres de campos y rutas) ya están definidos.
+- Cada uno pega su código **en su turno**, después de que el anterior haya hecho merge
+  (`git pull origin develop` en su rama antes de pegar), porque algunos archivos dependen de los anteriores.
 - Antes de abrir el pull request: `git pull origin develop` en su rama, compilar y probar.
 - Commits con la convención del equipo: `feat:` / `fix:` / `docs:`.
 

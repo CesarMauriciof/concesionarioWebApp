@@ -1,21 +1,5 @@
-@inject NavigationManager Navigation
-
-@*
-    Redirige al formulario de login cuando alguien sin sesión entra a una página protegida.
-    Lo usa Routes.razor dentro de <AuthorizeRouteView> (T7 - Adriana).
-    RESPONSABLE: Camilo - Tarea T5.
-
-    TODO [T5 - Camilo]:
-      - Construir la URL "/login?returnUrl=<ruta actual codificada>"
-        (Navigation.ToBaseRelativePath(Navigation.Uri) + Uri.EscapeDataString).
-      - Navigation.NavigateTo(url, forceLoad: true);
-        forceLoad es obligatorio: el login necesita una petición HTTP completa, no navegación interna.
-*@
-
-@code {
-    protected override void OnInitialized()
-    {
-        // TODO [T5 - Camilo]: incluir el returnUrl (ver arriba).
-        Navigation.NavigateTo("login", forceLoad: true);
-    }
-}
+@* =====================================================================================
+    PEGAR AQUÍ - T5 (Camilo)
+    Borra TODO el contenido de este archivo y pega el código que te llegó en tu mensaje.
+    Lo que hay abajo es solo para que el proyecto compile mientras tanto.
+   ===================================================================================== *@
