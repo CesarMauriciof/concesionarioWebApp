@@ -8,6 +8,7 @@ El proyecto está desarrollado en **C# con .NET 9 (Blazor Server)**, estructurad
 
 <img width="995" height="489" alt="{BE2E962F-085C-417E-AC68-32D92ABAB0BF}" src="https://github.com/user-attachments/assets/bc07417c-9310-4382-a8f1-141f63ece9c2" />
 
+<img width="1266" height="634" alt="image" src="https://github.com/user-attachments/assets/fa116e18-b841-43f2-9d7c-27dd13da9a2e" />
 
 ## Requisitos Previos
 
